@@ -102,7 +102,7 @@ RUN npm install -g kuduscript \
   && rm -f /tmp/kudu.conf \
   && rm -rf ./SiteExtensions \
   && cat /opt/Kudu/Web.config | \
-  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false" > /opt/Kudu/Web.config2 \
+  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
   && chmod 755 /opt/Kudu/bin/kudu.exe \
   && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
