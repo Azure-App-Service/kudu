@@ -102,8 +102,7 @@ RUN npm install -g kuduscript \
   && rm -f /tmp/kudu.conf \
   && rm -rf ./SiteExtensions \
   && cat /opt/Kudu/Web.config | \
-  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false"$
-  > /opt/Kudu/Web.config2 \
+  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false" > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
   && chmod 755 /opt/Kudu/bin/kudu.exe \
   && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
@@ -111,6 +110,6 @@ RUN npm install -g kuduscript \
   && chmod 755 /opt/Kudu/local
 
 # Upgrade mono
-RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.li$
+RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
   && apt-get update \
   && apt-get install -y libmono-system-net-http-webrequest4.0-cil --no-install-recommends
