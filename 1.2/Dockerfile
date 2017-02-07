@@ -103,9 +103,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && ln -s /opt/npm/3.10.8/node_modules /usr/bin/node_modules
 
 # Install Kudu
-RUN npm install -g kuduscript \
-  && npm install -g kudusync \
-  && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
+RUN cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && cp -rf ./SiteExtensions/* /opt \
@@ -113,6 +111,9 @@ RUN npm install -g kuduscript \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
   && rm -rf ./SiteExtensions \
+  && cd /opt/Kudu/bin \
+  && npm install kuduscript \
+  && npm install kudusync \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
