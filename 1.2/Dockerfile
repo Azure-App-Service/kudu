@@ -202,7 +202,8 @@ RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    && find /usr/share/dotnet/sdk/$DOTNET_SDK_VERSION \( -name \*.dll -or -name \*.exe \) -exec chmod +r {} \;
 
 # Trigger the population of the local package cache
 
