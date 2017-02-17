@@ -109,11 +109,12 @@ ENV PATH $PATH:/opt/nodejs/6.9.1/bin
 RUN cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
-  && cp -rf ./SiteExtensions/* /opt \
+  && mkdir /opt/Kudu \
+  && cp -rf ./60.60217.2701/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./SiteExtensions \
+  && rm -rf ./60.60217.2701 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
