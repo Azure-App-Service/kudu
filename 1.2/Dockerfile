@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 COPY apache2.conf /tmp
 COPY kudu.conf /tmp
 COPY ssh /tmp
+COPY startup.sh /tmp
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -29,7 +30,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y tcptraceroute \
   && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
   && chmod 755 /usr/bin/tcpping \
-  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.59.60120.2655.zip \
+  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.60.60217.2701.zip \
   && wget -O /tmp/node-v4.4.7-linux-x64.tar.xz https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz \
   && wget -O /tmp/node-v4.5.0-linux-x64.tar.xz https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.2.2-linux-x64.tar.xz https://nodejs.org/dist/v6.2.2/node-v6.2.2-linux-x64.tar.xz \
@@ -101,6 +102,8 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -rf /usr/bin/npm \
   && ln -s /opt/npm/3.10.8/node_modules/npm/bin/npm /usr/bin/npm \
   && ln -s /opt/npm/3.10.8/node_modules /usr/bin/node_modules
+  
+ENV PATH $PATH:/opt/nodejs/6.9.1/bin
 
 # Install Kudu
 RUN cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
@@ -111,9 +114,6 @@ RUN cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
   && rm -rf ./SiteExtensions \
-  && cd /opt/Kudu/bin \
-  && npm install kuduscript \
-  && npm install kudusync \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
@@ -204,7 +204,7 @@ RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
-    && find /usr/share/dotnet/sdk/$DOTNET_SDK_VERSION \( -name \*.dll -or -name \*.exe \) -exec chmod +r {} \;
+    && find /usr/share/dotnet/sdk/$DOTNET_SDK_VERSION \( -name \*.dll -or -name \*.exe \) -exec chmod +r {}
 
 # Trigger the population of the local package cache
 
@@ -215,3 +215,7 @@ RUN mkdir warmup \
     && cd .. \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
+	
+RUN chmod 755 /tmp/startup.sh
+	
+ENTRYPOINT [ "/tmp/startup.sh" ]
