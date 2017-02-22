@@ -106,7 +106,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
 ENV PATH $PATH:/opt/nodejs/6.9.1/bin
 
 # Install Kudu
-RUN npm install -g kudusync
+RUN npm install -g kudusync \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
