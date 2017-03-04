@@ -162,7 +162,7 @@ RUN eval "$(rbenv init -)" \
   && rbenv rehash \
   && rbenv global $WEBSITES_LATEST_NODE_VERSION \
   && ls /usr/local -a \
-  && gem install bundler \
+  && gem install bundler --version "=1.13.6"\
   && chmod -R 777 /usr/local/.rbenv/versions \
   && chmod -R 777 /usr/local/.rbenv/version
 
