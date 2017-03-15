@@ -219,8 +219,8 @@ RUN mkdir warmup \
     && rm -rf /tmp/NuGetScratch
 
 # PHP5.6
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends php5-cli
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends php5-cli
 
 # PHP7
 RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
