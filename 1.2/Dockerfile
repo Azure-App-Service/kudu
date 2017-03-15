@@ -217,7 +217,25 @@ RUN mkdir warmup \
     && cd .. \
     && rm -rf warmup \
     && rm -rf /tmp/NuGetScratch
-	
+
+# PHP5.6
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends php5-cli
+
+# PHP7
+RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends php7.0-cli php7.0-zip \
+  && rm -f /etc/apt/sources.list.d/stretch.list
+
+# PHP Composer
+RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+  && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --quiet \
+  && rm -f /tmp/composer-setup.php
+
+ENV PHP_VERSION=7.0
+ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
+
 RUN chmod 755 /tmp/startup.sh
 	
 ENTRYPOINT [ "/tmp/startup.sh" ]
