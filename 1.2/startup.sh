@@ -10,6 +10,15 @@ USER_ID=$3
 USER_NAME=$4
 SITE_NAME=$5
 
+# PHP7 is the default PHP version, so change /usr/bin/ph* if PHP5 is specified
+if [[ "x$PHP_VERSION" =~ x5\.. && -x /usr/bin/php5 ]]; then
+  rm -f /etc/alternatives/php /etc/alternatives/phar
+  ln -s /usr/bin/php5 /etc/alternatives/php
+  ln -s /usr/bin/phar5 /etc/alternatives/phar
+fi
+
+[ -z $COMPOSER_ARGS ] && export COMPOSER_ARGS='--prefer-dist --no-dev --optimize-autoloader'
+
 groupadd -g $GROUP_ID $GROUP_NAME
 useradd -u $USER_ID -g $GROUP_NAME $USER_NAME
 chown -R $USER_NAME:$GROUP_NAME /etc/apache2
