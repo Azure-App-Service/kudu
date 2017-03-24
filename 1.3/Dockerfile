@@ -7,6 +7,7 @@ COPY apache2.conf /tmp
 COPY kudu.conf /tmp
 COPY ssh /tmp
 COPY startup.sh /tmp
+COPY webssh.zip /tmp 
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -104,6 +105,10 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && ln -s /opt/npm/3.10.10/node_modules /usr/bin/node_modules
   
 ENV PATH $PATH:/opt/nodejs/6.9.3/bin
+
+# Install webssh
+RUN mkdir /opt/webssh \ 
+  && unzip /tmp/webssh.zip -d /opt/webssh
 
 # Install Kudu
 RUN npm install -g kudusync \
