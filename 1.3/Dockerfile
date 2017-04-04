@@ -31,7 +31,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y tcptraceroute \
   && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
   && chmod 755 /usr/bin/tcpping \
-  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.60.60222.2708.zip \
+  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.61.60404.2769.zip \
   && wget -O /tmp/node-v4.4.7-linux-x64.tar.xz https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz \
   && wget -O /tmp/node-v4.5.0-linux-x64.tar.xz https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.2.2-linux-x64.tar.xz https://nodejs.org/dist/v6.2.2/node-v6.2.2-linux-x64.tar.xz \
@@ -126,17 +126,17 @@ RUN npm install -g kudusync \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./60.60222.2708/* /opt/Kudu \
+  && cp -rf ./61.60404.2769/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./60.60222.2708 \
+  && rm -rf ./61.60404.2769 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
   && chmod 755 /opt/Kudu/bin/kudu.exe \
   && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
-  && chmod -f 755 /opt/Kudu/bin/Scripts/starter.sh || : \
+  && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
   && mkdir -p /opt/Kudu/local \
   && chmod 755 /opt/Kudu/local
 
@@ -178,7 +178,7 @@ RUN eval "$(rbenv init -)" \
   && rbenv rehash \
   && rbenv global $WEBSITES_LATEST_NODE_VERSION \
   && ls /usr/local -a \
-  && gem install bundler \
+  && gem install bundler --version "=1.13.6"\
   && chmod -R 777 /usr/local/.rbenv/versions \
   && chmod -R 777 /usr/local/.rbenv/version
 
@@ -214,7 +214,7 @@ RUN apt-get update \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
     
-ENV DOTNET_SDK_VERSION 1.0.0-rc4-004771
+ENV DOTNET_SDK_VERSION 1.0.1
 ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
 
 RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
