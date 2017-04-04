@@ -113,11 +113,11 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -f /usr/bin/node \
   && ln -s /opt/nodejs/6.10.2/bin/node /usr/bin/node \
   && rm -f /opt/nodejs/6.10.2/bin/npm \
-  && ln -s /opt/npm/6.10.2/node_modules/npm/bin/npm /opt/nodejs/npm \
-  && ln -s /opt/npm/6.10.2/node_modules /opt/nodejs/node_modules \
+  && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /opt/nodejs/npm \
+  && ln -s /opt/npm/3.10.10/node_modules /opt/nodejs/node_modules \
   && rm -rf /usr/bin/npm \
-  && ln -s /opt/npm/6.10.2/node_modules/npm/bin/npm /usr/bin/npm \
-  && ln -s /opt/npm/6.10.2/node_modules /usr/bin/node_modules
+  && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /usr/bin/npm \
+  && ln -s /opt/npm/3.10.10/node_modules /usr/bin/node_modules
   
 ENV PATH $PATH:/opt/nodejs/6.10.2/bin
 
