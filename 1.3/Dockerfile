@@ -37,6 +37,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && wget -O /tmp/node-v6.2.2-linux-x64.tar.xz https://nodejs.org/dist/v6.2.2/node-v6.2.2-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.6.0-linux-x64.tar.xz https://nodejs.org/dist/v6.6.0/node-v6.6.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.9.3-linux-x64.tar.xz https://nodejs.org/dist/v6.9.3/node-v6.9.3-linux-x64.tar.xz \
+  && wget -O /tmp/node-v6.10.2-linux-x64.tar.xz https://nodejs.org/dist/v6.10.2/node-v6.10.2-linux-x64.tar.xz \
   && wget -O /tmp/npm-2.15.8.zip https://github.com/npm/npm/archive/v2.15.8.zip \
   && wget -O /tmp/npm-2.15.9.zip https://github.com/npm/npm/archive/v2.15.9.zip \
   && wget -O /tmp/npm-3.9.5.zip https://github.com/npm/npm/archive/v3.9.5.zip \
@@ -102,19 +103,23 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -f node-v6.9.3-linux-x64.tar.xz \
   && mv /opt/nodejs/node-v6.9.3-linux-x64 /opt/nodejs/6.9.3 \
   && echo "3.10.10" > /opt/nodejs/6.9.3/npm.txt \
+  && tar xfJ /tmp/node-v6.10.2-linux-x64.tar.xz -C /opt/nodejs \
+  && rm -f node-v6.10.2-linux-x64.tar.xz \
+  && mv /opt/nodejs/node-v6.10.2-linux-x64 /opt/nodejs/6.10.2 \
+  && echo "3.10.10" > /opt/nodejs/6.10.2/npm.txt \
   && chown -R root:root /opt/nodejs \
-  && ln -s /opt/nodejs/6.9.3/bin/node /opt/nodejs/node \
-  && ln -s /opt/nodejs/6.9.3/npm.txt /opt/nodejs/npm.txt \
+  && ln -s /opt/nodejs/6.10.2/bin/node /opt/nodejs/node \
+  && ln -s /opt/nodejs/6.10.2/npm.txt /opt/nodejs/npm.txt \
   && rm -f /usr/bin/node \
-  && ln -s /opt/nodejs/6.9.3/bin/node /usr/bin/node \
-  && rm -f /opt/nodejs/6.9.3/bin/npm \
-  && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /opt/nodejs/npm \
-  && ln -s /opt/npm/3.10.10/node_modules /opt/nodejs/node_modules \
+  && ln -s /opt/nodejs/6.10.2/bin/node /usr/bin/node \
+  && rm -f /opt/nodejs/6.10.2/bin/npm \
+  && ln -s /opt/npm/6.10.2/node_modules/npm/bin/npm /opt/nodejs/npm \
+  && ln -s /opt/npm/6.10.2/node_modules /opt/nodejs/node_modules \
   && rm -rf /usr/bin/npm \
-  && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /usr/bin/npm \
-  && ln -s /opt/npm/3.10.10/node_modules /usr/bin/node_modules
+  && ln -s /opt/npm/6.10.2/node_modules/npm/bin/npm /usr/bin/npm \
+  && ln -s /opt/npm/6.10.2/node_modules /usr/bin/node_modules
   
-ENV PATH $PATH:/opt/nodejs/6.9.3/bin
+ENV PATH $PATH:/opt/nodejs/6.10.2/bin
 
 # Install webssh
 RUN mkdir /opt/webssh \ 
