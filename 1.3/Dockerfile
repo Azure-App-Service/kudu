@@ -141,6 +141,8 @@ RUN npm install -g kudusync \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
   && chmod 755 /opt/Kudu/bin/kudu.exe \
   && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
+  && awk '{ sub("\r$", ""); print }' /opt/Kudu/bin/Scripts/starter.sh > /tmp/starter_fixed.sh \
+  && mv /tmp/starter_fixed.sh /opt/Kudu/bin/Scripts/starter.sh \
   && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
   && mkdir -p /opt/Kudu/local \
   && chmod 755 /opt/Kudu/local
