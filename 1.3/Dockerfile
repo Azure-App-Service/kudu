@@ -248,7 +248,7 @@ RUN apt-get update \
 # PHP7
 RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
   && apt-get update \
-  && apt-get install -y --no-install-recommends php7.0-cli php7.0-zip \
+  && apt-get install -y --no-install-recommends php7.0-cli php7.0-zip php7.0-mbstring php7.0-xml \
   && rm -f /etc/apt/sources.list.d/stretch.list
 
 # PHP Composer
