@@ -186,7 +186,7 @@ ENV RUBY_CONFIGURE_OPTS=--disable-install-doc
 ENV RUBY_CFLAGS=-O3
 
 RUN eval "$(rbenv init -)" \
-  && export WEBSITES_LATEST_NODE_VERSION="$(rbenv install -l | grep -v - | grep 2.3 | tail -n 1)" \
+  && export WEBSITES_LATEST_NODE_VERSION="2.3.3" \
   && rbenv install $WEBSITES_LATEST_NODE_VERSION \
   && rbenv rehash \
   && rbenv global $WEBSITES_LATEST_NODE_VERSION \
