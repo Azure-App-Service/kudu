@@ -9,6 +9,7 @@ COPY ssh /tmp
 COPY startup.sh /tmp
 COPY webssh.zip /tmp 
 COPY mod_mono.tar /tmp
+COPY deploy.bash.ruby.template /tmp
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -149,6 +150,7 @@ RUN npm install -g kudusync \
   && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
   && mkdir -p /opt/Kudu/local \
   && chmod 755 /opt/Kudu/local
+  && cp /tmp/deploy.bash.ruby.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates
 
 # Upgrade mono
 RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
@@ -263,5 +265,8 @@ ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
 RUN chmod 755 /tmp/startup.sh
-	
+
+# Copy ruby template to kuduscript location
+
+
 ENTRYPOINT [ "/tmp/startup.sh" ]
