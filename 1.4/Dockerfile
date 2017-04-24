@@ -9,6 +9,7 @@ COPY ssh /tmp
 COPY startup.sh /tmp
 COPY webssh.zip /tmp 
 COPY mod_mono.tar /tmp
+COPY deploy.bash.ruby.template /tmp
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -32,7 +33,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y tcptraceroute \
   && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
   && chmod 755 /usr/bin/tcpping \
-  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.62.60406.2771.zip \
+  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.62.60424.2804.zip \
   && wget -O /tmp/node-v4.4.7-linux-x64.tar.xz https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz \
   && wget -O /tmp/node-v4.5.0-linux-x64.tar.xz https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.2.2-linux-x64.tar.xz https://nodejs.org/dist/v6.2.2/node-v6.2.2-linux-x64.tar.xz \
@@ -134,21 +135,21 @@ RUN npm install -g kudusync \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./62.60406.2771/* /opt/Kudu \
+  && cp -rf ./62.60424.2804/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./62.60406.2771 \
+  && rm -rf ./62.60424.2804 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
   && chmod 755 /opt/Kudu/bin/kudu.exe \
   && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
-  && awk '{ sub("\r$", ""); print }' /opt/Kudu/bin/Scripts/starter.sh > /tmp/starter_fixed.sh \
-  && mv /tmp/starter_fixed.sh /opt/Kudu/bin/Scripts/starter.sh \
   && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
   && mkdir -p /opt/Kudu/local \
-  && chmod 755 /opt/Kudu/local 
+  && chmod 755 /opt/Kudu/local \
+  && cp /tmp/deploy.bash.ruby.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates \
+  && rm -f /tmp/deploy.bash.ruby.template
 
 # Upgrade mono
 RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
