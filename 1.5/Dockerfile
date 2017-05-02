@@ -32,8 +32,8 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y openssh-client --no-install-recommends \
   && apt-get install -y vim tree --no-install-recommends \
   && apt-get install -y tcptraceroute \
-  && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
-  && chmod 755 /usr/bin/tcpping \
+#  && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
+#  && chmod 755 /usr/bin/tcpping \
   && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.62.60424.2804.zip \
   && wget -O /tmp/node-v4.4.7-linux-x64.tar.xz https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz \
   && wget -O /tmp/node-v4.5.0-linux-x64.tar.xz https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-x64.tar.xz \
