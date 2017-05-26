@@ -9,6 +9,7 @@ COPY ssh /tmp
 COPY startup.sh /tmp
 COPY webssh.zip /tmp 
 COPY mod_mono.tar /tmp
+COPY hostingstart.html /home/site/wwwroot/hostingstart.html
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -247,6 +248,12 @@ RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php')
 ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
-RUN chmod 755 /tmp/startup.sh
+RUN chmod 755 /tmp/startup.sh \
+ && mkdir -p /home/LogFiles
+
+EXPOSE 8181
+
+WORKDIR /home/site/wwwroot
 
 ENTRYPOINT [ "/tmp/startup.sh" ]
+CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]

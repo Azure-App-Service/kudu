@@ -29,6 +29,7 @@ chown -R $USER_NAME:$GROUP_NAME /etc/mono/registry
 cd /etc/apache2/sites-available
 a2dissite 000-default.conf
 a2ensite kudu.conf
+export KUDU_RUN_USER="$USER_NAME"
 
 /bin/bash -c "node /opt/webssh/index.js &"
 
