@@ -14,7 +14,6 @@ groupadd -g $GROUP_ID $GROUP_NAME
 useradd -u $USER_ID -g $GROUP_NAME $USER_NAME
 chown -R $USER_NAME:$GROUP_NAME /etc/apache2
 chown -R $USER_NAME:$GROUP_NAME /opt/Kudu
-chown -R $USER_NAME:$GROUP_NAME /home
 touch /var/log/apache2/kudu-error.log
 touch /var/log/apache2/kudu-access.log
 mkdir -p /var/lock/apache2 /var/run/apache2
