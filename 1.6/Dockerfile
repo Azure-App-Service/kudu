@@ -249,7 +249,8 @@ ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
 RUN chmod 755 /tmp/startup.sh \
- && mkdir -p /home/LogFiles
+ && mkdir -p /home/LogFiles \
+ && chmod -R 777 /home
 
 EXPOSE 8181
 
