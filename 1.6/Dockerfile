@@ -36,13 +36,11 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && wget -O /tmp/node-v6.6.0-linux-x64.tar.xz https://nodejs.org/dist/v6.6.0/node-v6.6.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.9.3-linux-x64.tar.xz https://nodejs.org/dist/v6.9.3/node-v6.9.3-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.10.3-linux-x64.tar.xz https://nodejs.org/dist/v6.10.3/node-v6.10.3-linux-x64.tar.xz \
-  && wget -O /tmp/node-v8.0.0-linux-x64.tar.xz https://nodejs.org/dist/v8.0.0/node-v8.0.0-linux-x64.tar.xz \
   && wget -O /tmp/npm-2.15.8.zip https://github.com/npm/npm/archive/v2.15.8.zip \
   && wget -O /tmp/npm-2.15.9.zip https://github.com/npm/npm/archive/v2.15.9.zip \
   && wget -O /tmp/npm-3.9.5.zip https://github.com/npm/npm/archive/v3.9.5.zip \
   && wget -O /tmp/npm-3.10.3.zip https://github.com/npm/npm/archive/v3.10.3.zip \
   && wget -O /tmp/npm-3.10.10.zip https://github.com/npm/npm/archive/v3.10.10.zip \
-  && wget -O /tmp/npm-5.0.0.zip https://github.com/npm/npm/archive/v5.0.0.zip \
   && a2enmod proxy \
   && a2enmod proxy_http \
   && a2enmod proxy_wstunnel \
@@ -82,11 +80,6 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && mv /opt/npm/3.10.10/node_modules/npm-3.10.10 /opt/npm/3.10.10/node_modules/npm \
   && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /opt/npm/3.10.10/npm \
   && chmod -R 755 /opt/npm/3.10.10/node_modules/npm/bin \
-  && mkdir -p /opt/npm/5.0.0/node_modules \
-  && unzip -q /tmp/npm-5.0.0.zip -d /opt/npm/5.0.0/node_modules \
-  && mv /opt/npm/5.0.0/node_modules/npm-5.0.0 /opt/npm/5.0.0/node_modules/npm \
-  && ln -s /opt/npm/5.0.0/node_modules/npm/bin/npm /opt/npm/5.0.0/npm \
-  && chmod -R 755 /opt/npm/5.0.0/node_modules/npm/bin \
   && chown -R root:root /opt/npm \
   && mkdir -p /opt/nodejs \
   && tar xfJ /tmp/node-v4.4.7-linux-x64.tar.xz -C /opt/nodejs \
@@ -114,10 +107,6 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -f node-v6.10.3-linux-x64.tar.xz \
   && mv /opt/nodejs/node-v6.10.3-linux-x64 /opt/nodejs/6.10.3 \
   && echo "3.10.10" > /opt/nodejs/6.10.3/npm.txt \
-  && tar xfJ /tmp/node-v8.0.0-linux-x64.tar.xz -C /opt/nodejs \
-  && rm -f node-v8.0.0-linux-x64.tar.xz \
-  && mv /opt/nodejs/node-v8.0.0-linux-x64 /opt/nodejs/8.0.0 \
-  && echo "5.0.0" > /opt/nodejs/8.0.0/npm.txt \
   && chown -R root:root /opt/nodejs \
   && ln -s /opt/nodejs/6.10.3/bin/node /opt/nodejs/node \
   && ln -s /opt/nodejs/6.10.3/npm.txt /opt/nodejs/npm.txt \
