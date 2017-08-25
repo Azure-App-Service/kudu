@@ -2,7 +2,7 @@
 set -x -e
 
 buildnumber=${4-$(date -u +"%y%m%d%H%M")}
-version=1.8
+version=1.7
 
 docker build -t "$1"/kudu:${version}_"$buildnumber" -t "$1"/kudu:latest_"$buildnumber" $version
 
