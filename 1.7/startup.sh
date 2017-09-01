@@ -31,6 +31,11 @@ a2dissite 000-default.conf
 a2ensite kudu.conf
 export KUDU_RUN_USER="$USER_NAME"
 
+# Start the mono server and give it a chance to warm up before
+# hitting it with requests
+sudo -E -u $USER_NAME MONO_IOMAP=all HOME=/home WEBSITE_SITE_NAME=$SITE_NAME APPSETTING_SCM_USE_LIBGIT2SHARP_REPOSITORY=0 KUDU_APPPATH=/opt/Kudu KUDU_MSBUILD=/usr/bin/xbuild APPDATA=/opt/Kudu/local SCM_BIN_PATH=/opt/Kudu/bin /usr/bin/mono /usr/lib/mono/4.5/mod-mono-server4.exe --filename /tmp/mod_mono_server_default --applications /:/opt/Kudu --nonstop &
+sleep 5
+
 /bin/bash -c "node /opt/webssh/index.js &"
 
 #Run apache
