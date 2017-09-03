@@ -29,17 +29,31 @@ chown -R $USER_NAME:$GROUP_NAME /etc/mono/registry
 cd /etc/apache2/sites-available
 a2dissite 000-default.conf
 a2ensite kudu.conf
-export KUDU_RUN_USER="$USER_NAME"
 
-# Start the mono server and give it a chance to warm up before
-# hitting it with requests
-sudo -E -u $USER_NAME MONO_IOMAP=all HOME=/home WEBSITE_SITE_NAME=$SITE_NAME APPSETTING_SCM_USE_LIBGIT2SHARP_REPOSITORY=0 KUDU_APPPATH=/opt/Kudu KUDU_MSBUILD=/usr/bin/xbuild APPDATA=/opt/Kudu/local SCM_BIN_PATH=/opt/Kudu/bin /usr/bin/mono /usr/lib/mono/4.5/mod-mono-server4.exe --filename /tmp/mod_mono_server_default --applications /:/opt/Kudu --nonstop &
+/bin/bash -c "node /opt/webssh/index.js &"
+
+export KUDU_RUN_USER="$USER_NAME"
+export MONO_IOMAP=all
+export HOME=/home
+export WEBSITE_SITE_NAME=$SITE_NAME
+export APPSETTING_SCM_USE_LIBGIT2SHARP_REPOSITORY=0
+export KUDU_APPPATH=/opt/Kudu
+export KUDU_MSBUILD=/usr/bin/xbuild
+export APPDATA=/opt/Kudu/local
+export SCM_BIN_PATH=/opt/Kudu/bin
+
+# Start mod-mono-server and give it a chance to warm up before
+# hitting it with requests. This prevents a pathological behavior
+# in mod_mono where it keeps starting new mod-mono-server processes
+# because they aren't responding fast enough, and it parallelizes
+# mod-mono-server startup with apache startup, resulting in faster cold start.
+# mod_mono will still spawn new instances in the event that this one exits early.
+runuser -p -u "$USER_NAME" -- /usr/bin/mono /usr/lib/mono/4.5/mod-mono-server4.exe \
+  --filename /tmp/mod_mono_server_default --applications /:/opt/Kudu --nonstop &
 
 while [ ! -S /tmp/mod_mono_server_default ] ; do
  sleep 1
 done
-
-/bin/bash -c "node /opt/webssh/index.js &"
 
 #Run apache
 /usr/sbin/apache2ctl -D FOREGROUND

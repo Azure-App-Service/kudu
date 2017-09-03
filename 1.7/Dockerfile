@@ -277,9 +277,6 @@ RUN chmod 755 /tmp/startup.sh \
 # an unnecessary mono process
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 
-# For use in startup script
-RUN apt-get install sudo
-
 EXPOSE 8181
 
 WORKDIR /home/site/wwwroot
