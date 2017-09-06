@@ -273,6 +273,10 @@ RUN chmod 755 /tmp/startup.sh \
  && mkdir -p /home/LogFiles \
  && chmod -R 777 /home
 
+# Remove extraneous config mono config load that starts up
+# an unnecessary mono process
+RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
+
 EXPOSE 8181
 
 WORKDIR /home/site/wwwroot
