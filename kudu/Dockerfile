@@ -16,6 +16,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
   && echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/5.0.0.100/. main" > \
   /etc/apt/sources.list.d/mono-xamarin.list \
+  && echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list &&
   && apt-get update \
   && apt-get install -y apt-utils --no-install-recommends \
   && apt-get install -y unzip --no-install-recommends \
@@ -23,7 +24,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y mono-complete --no-install-recommends \
   && apt-get install -y mono-apache-server4 --no-install-recommends \
   && apt-get install -y libapache2-mod-mono --no-install-recommends \
-  && apt-get install -y git --no-install-recommends \
+  && apt-get install -y -t jessie-backports git --no-install-recommends \
   && apt-get install -y openssh-client --no-install-recommends \
   && apt-get install -y vim tree --no-install-recommends \
   && apt-get install -y tcptraceroute \
