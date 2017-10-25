@@ -226,7 +226,7 @@ RUN mv /usr/bin/ssh /usr/bin/ssh.original \
   && chown root:root /usr/bin/ssh \
   && chmod 755 /usr/bin/ssh
 
-# Install .NET Core 1.0
+# Install .NET Core 1/2
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libc6 \
@@ -245,13 +245,23 @@ RUN apt-get update \
 ENV DOTNET_SDK_VERSION 1.0.4
 ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
 
-RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
+RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet-$DOTNET_SDK_VERSION.tar.gz \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
-    && rm dotnet.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
-    && find /usr/share/dotnet/sdk/$DOTNET_SDK_VERSION \( -name \*.dll -or -name \*.exe \) -exec chmod +r {} \;
-	
+    && tar -zxf dotnet-$DOTNET_SDK_VERSION.tar.gz -C /usr/share/dotnet \
+    && rm dotnet-$DOTNET_SDK_VERSION.tar.gz
+
+ENV DOTNET_SDK_VERSION 2.0.0
+ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-x64.tar.gz
+
+RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet-$DOTNET_SDK_VERSION.tar.gz \
+    && tar -zxf dotnet-$DOTNET_SDK_VERSION.tar.gz -C /usr/share/dotnet \
+    && rm dotnet-$DOTNET_SDK_VERSION.tar.gz \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/ \
+    && /usr/bin/dotnet new -i Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-\* \
+    && /usr/bin/dotnet new -i Microsoft.DotNet.Common.ProjectTemplates.1.x::1.0.0-\* \
+    && /usr/bin/dotnet new -i Microsoft.DotNet.Test.ProjectTemplates.1.x::1.0.0-\* \
+    && find /usr/share/dotnet/sdk \( -name \*.dll -or -name \*.exe \) -exec chmod +r {} \;
+
 # PHP5.6
 RUN apt-get update \
   && apt-get install -y --no-install-recommends php5-cli
