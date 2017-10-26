@@ -241,26 +241,28 @@ RUN apt-get update \
         libuuid1 \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
-    
-ENV DOTNET_SDK_VERSION 1.0.4
+
+# Install .NET Core SDK
+ENV DOTNET_SDK_VERSION 2.0.2
 ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
+ENV DOTNET_SDK_DOWNLOAD_SHA 1242E8B72911A868E4F6C5D1112A64AD094223FA146DF04058160D25FABD44E4D1C50D076F3655C91613D32BC43D0514D3BAC7C3D112C23A670B5DA3676076F8
 
-RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet-$DOTNET_SDK_VERSION.tar.gz \
+RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
+    && echo "$DOTNET_SDK_DOWNLOAD_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf dotnet-$DOTNET_SDK_VERSION.tar.gz -C /usr/share/dotnet \
-    && rm dotnet-$DOTNET_SDK_VERSION.tar.gz
+    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
+    && rm dotnet.tar.gz \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-ENV DOTNET_SDK_VERSION 2.0.0
-ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-x64.tar.gz
-
-RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet-$DOTNET_SDK_VERSION.tar.gz \
-    && tar -zxf dotnet-$DOTNET_SDK_VERSION.tar.gz -C /usr/share/dotnet \
-    && rm dotnet-$DOTNET_SDK_VERSION.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/ \
-    && /usr/bin/dotnet new -i Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-\* \
-    && /usr/bin/dotnet new -i Microsoft.DotNet.Common.ProjectTemplates.1.x::1.0.0-\* \
-    && /usr/bin/dotnet new -i Microsoft.DotNet.Test.ProjectTemplates.1.x::1.0.0-\* \
-    && find /usr/share/dotnet/sdk \( -name \*.dll -or -name \*.exe \) -exec chmod +r {} \;
+# Trigger the population of the local package cache
+ENV NUGET_XMLDOC_MODE skip
+ENV NUGET_PACKAGES /var/nuget
+RUN mkdir warmup \
+    && cd warmup \
+    && dotnet new \
+    && cd .. \
+    && rm -rf warmup \
+    && rm -rf /tmp/NuGetScratch
 
 # PHP5.6
 RUN apt-get update \
