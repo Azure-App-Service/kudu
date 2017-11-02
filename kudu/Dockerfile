@@ -254,13 +254,14 @@ RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-# Moving the package cache to the disk image will require the cache to be repopulated
+# Moving the package cache to the container image will require user packages to be repopulated
 # for each new build done in a new container instance, but it's *much* faster than
-# using a location on the user's site volume and does not require them to use their storage
+# using a location on the user's site volume and does not require them to use their storage, and
+# lets us warm the caches with standard packages
 ENV NUGET_PACKAGES /var/nuget
 
 # Trigger the population of the local package cache and NuGetFallbackFolder
-# We install the 1.x web templates so we can create and restore 1.0 and 1.1 MVC apps as well as 2.0
+# We install the 1.x web templates just so we can create and restore 1.0 and 1.1 MVC apps here
 # See https://github.com/aspnet/Tooling/blob/master/missing-template.md
 # Note that after populating the cache we need to chmod 777 every directory underneath
 # so the Kudu user can access them; this can be removed if we run Kudu as root later.
@@ -321,8 +322,6 @@ RUN chmod 755 /tmp/startup.sh \
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 
 EXPOSE 8181
-
-WORKDIR /home/site/wwwroot
 
 ENTRYPOINT [ "/tmp/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
