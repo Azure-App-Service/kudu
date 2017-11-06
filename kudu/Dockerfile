@@ -46,6 +46,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && wget -O /tmp/npm-3.10.3.zip https://github.com/npm/npm/archive/v3.10.3.zip \
   && wget -O /tmp/npm-3.10.10.zip https://github.com/npm/npm/archive/v3.10.10.zip \
   && wget -O /tmp/npm-5.0.3.zip https://github.com/npm/npm/archive/v5.0.3.zip \
+  && ln -s ../mods-available/xml2enc.load /etc/apache2/mods-enabled \
   && a2enmod proxy \
   && a2enmod proxy_http \
   && a2enmod proxy_wstunnel \
@@ -312,6 +313,12 @@ RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php')
 
 ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
+
+# Install LogAnalyzer
+COPY LogAnalyzer.zip /tmp 
+RUN mkdir /opt/LogAnalyzer \ 
+  && unzip /tmp/LogAnalyzer.zip -d /opt/LogAnalyzer \
+  && rm -f /tmp/LogAnalyzer.zip
 
 RUN chmod 755 /tmp/startup.sh \
  && mkdir -p /home/LogFiles \
