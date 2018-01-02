@@ -1,11 +1,6 @@
 FROM buildpack-deps:jessie-curl
 MAINTAINER Nazim Lala <naziml@microsoft.com>
 
-COPY ssh /tmp
-COPY startup.sh /tmp
-COPY webssh.zip /tmp 
-COPY hostingstart.html /home/site/wwwroot/hostingstart.html
-
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
@@ -119,19 +114,6 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
 
-# Install webssh
-RUN mkdir /opt/webssh \ 
-  && unzip /tmp/webssh.zip -d /opt/webssh
-
-# Install Kudu
-# TODO
-
-# Replace ssh with wrapper script for CIFS mount permissions workaround
-RUN mv /usr/bin/ssh /usr/bin/ssh.original \
-  && mv /tmp/ssh /usr/bin/ssh \
-  && chown root:root /usr/bin/ssh \
-  && chmod 755 /usr/bin/ssh
-
 # Install .NET Core
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -201,22 +183,44 @@ RUN mkdir /var/nuget \
     && rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
+# Install kudusync globally
+RUN npm install -g kudusync
 
+# Install Kudu
+COPY kudu.zip /tmp
+RUN mkdir /opt/Kudu \
+    && unzip /tmp/kudu.zip -d /opt/Kudu
+	
 # Install LogAnalyzer
 COPY LogAnalyzer.zip /tmp 
 RUN mkdir /opt/LogAnalyzer \ 
   && unzip /tmp/LogAnalyzer.zip -d /opt/LogAnalyzer \
   && rm -f /tmp/LogAnalyzer.zip
 
+# Install webssh
+COPY webssh.zip /tmp
+RUN mkdir /opt/webssh \ 
+  && unzip /tmp/webssh.zip -d /opt/webssh
+
+# Replace ssh with wrapper script for CIFS mount permissions workaround
+COPY ssh /tmp
+RUN mv /usr/bin/ssh /usr/bin/ssh.original \
+  && mv /tmp/ssh /usr/bin/ssh \
+  && chown root:root /usr/bin/ssh \
+  && chmod 755 /usr/bin/ssh
+  
+# Install startup script
+COPY startup.sh /tmp  
 RUN chmod 755 /tmp/startup.sh \
- && mkdir -p /home/LogFiles \
- && chmod -R 777 /home
+ && mkdir -p /home/LogFiles
+ 
+# Create the wwwroot directory tree in the image and place a
+# hostingstart.html for debug usage
+COPY hostingstart.html /home/site/wwwroot/hostingstart.html
+
+# Open up permissions on /home to best emulate the mount
+RUN chmod -R 777 /home
 
 EXPOSE 8181
-
-COPY kudu.zip /tmp
-RUN mkdir /opt/Kudu \
-    && unzip /tmp/kudu.zip -d /opt/Kudu
-
 ENTRYPOINT [ "/tmp/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
