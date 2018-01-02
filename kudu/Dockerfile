@@ -209,18 +209,21 @@ RUN mv /usr/bin/ssh /usr/bin/ssh.original \
   && chown root:root /usr/bin/ssh \
   && chmod 755 /usr/bin/ssh
   
-# Install startup script
-COPY startup.sh /tmp  
-RUN chmod 755 /tmp/startup.sh \
+# Install startup script and create LogFiles directory
+COPY startup.sh /  
+RUN chmod 755 /startup.sh \
  && mkdir -p /home/LogFiles
  
 # Create the wwwroot directory tree in the image and place a
 # hostingstart.html for debug usage
 COPY hostingstart.html /home/site/wwwroot/hostingstart.html
 
+# Clear out /tmp
+RUN rm -rf /tmp/*
+
 # Open up permissions on /home to best emulate the mount
 RUN chmod -R 777 /home
 
 EXPOSE 8181
-ENTRYPOINT [ "/tmp/startup.sh" ]
+ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
