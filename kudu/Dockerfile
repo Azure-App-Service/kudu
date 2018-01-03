@@ -328,7 +328,8 @@ RUN mv /usr/bin/ssh /usr/bin/ssh.original \
   && chmod 755 /usr/bin/ssh
   
 COPY hostingstart.html /home/site/wwwroot/hostingstart.html
-RUN chmod -R 777 /home
+RUN chmod -R 777 /home \
+  && rm -rf /tmp/*
 
 EXPOSE 8181
 
