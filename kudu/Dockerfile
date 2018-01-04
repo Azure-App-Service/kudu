@@ -3,13 +3,7 @@ MAINTAINER Nazim Lala <naziml@microsoft.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-COPY apache2.conf /tmp
-COPY kudu.conf /tmp
-COPY ssh /tmp
-COPY startup.sh /tmp
-COPY webssh.zip /tmp 
 COPY mod_mono.tar /tmp
-COPY hostingstart.html /home/site/wwwroot/hostingstart.html
 
 # Install dependencies
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
@@ -145,36 +139,11 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
 
-# Install webssh
-RUN mkdir /opt/webssh \ 
-  && unzip /tmp/webssh.zip -d /opt/webssh
-
-# Install Kudu
-RUN npm install -g kudusync \
-  && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
-  && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
-  && unzip -q -o /tmp/Kudu.zip \
-  && mkdir /opt/Kudu \
-  && cp -rf ./67.61106.3111/* /opt/Kudu \
-  && rm -f /tmp/Kudu.zip \
-  && rm -f /tmp/apache2.conf \
-  && rm -f /tmp/kudu.conf \
-  && rm -rf ./67.61106.3111 \
-  && cat /opt/Kudu/Web.config | \
-  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
-  && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
-  && chmod 755 /opt/Kudu/bin/kudu.exe \
-  && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
-  && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
-  && mkdir -p /opt/Kudu/local \
-  && chmod 755 /opt/Kudu/local
-
 # Upgrade mono
 RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
   && apt-get update \
   && apt-get install -y libmono-system-net-http-webrequest4.0-cil --no-install-recommends
 
-  
 # Ruby installations
 
 # Dependencies for various ruby and rubygem installations
@@ -221,11 +190,7 @@ ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 # SQL Server gem support
 RUN apt-get install -y unixodbc-dev freetds-dev freetds-bin
 
-# Replace ssh with wrapper script for CIFS mount permissions workaround
-RUN mv /usr/bin/ssh /usr/bin/ssh.original \
-  && mv /tmp/ssh /usr/bin/ssh \
-  && chown root:root /usr/bin/ssh \
-  && chmod 755 /usr/bin/ssh
+
 
 # Install .NET Core
 RUN apt-get update \
@@ -314,21 +279,59 @@ RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php')
 ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
+# Install Kudu
+COPY kudu.conf /tmp
+COPY apache2.conf /tmp
+RUN npm install -g kudusync \
+  && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
+  && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
+  && unzip -q -o /tmp/Kudu.zip \
+  && mkdir /opt/Kudu \
+  && cp -rf ./67.61106.3111/* /opt/Kudu \
+  && rm -f /tmp/Kudu.zip \
+  && rm -f /tmp/apache2.conf \
+  && rm -f /tmp/kudu.conf \
+  && rm -rf ./67.61106.3111 \
+  && cat /opt/Kudu/Web.config | \
+  sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
+  && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
+  && chmod 755 /opt/Kudu/bin/kudu.exe \
+  && chmod 755 /opt/Kudu/bin/node_modules/.bin/kuduscript \
+  && chmod 755 /opt/Kudu/bin/Scripts/starter.sh \
+  && mkdir -p /opt/Kudu/local \
+  && chmod 755 /opt/Kudu/local
+
 # Install LogAnalyzer
 COPY LogAnalyzer.zip /tmp 
 RUN mkdir /opt/LogAnalyzer \ 
   && unzip /tmp/LogAnalyzer.zip -d /opt/LogAnalyzer \
   && rm -f /tmp/LogAnalyzer.zip
 
-RUN chmod 755 /tmp/startup.sh \
- && mkdir -p /home/LogFiles \
- && chmod -R 777 /home
+COPY startup.sh /
+RUN chmod 755 /startup.sh \
+ && mkdir -p /home/LogFiles
 
 # Remove extraneous config mono config load that starts up
 # an unnecessary mono process
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 
+# Install webssh
+COPY webssh.zip /tmp 
+RUN mkdir /opt/webssh \ 
+  && unzip /tmp/webssh.zip -d /opt/webssh
+
+# Replace ssh with wrapper script for CIFS mount permissions workaround
+COPY ssh /tmp
+RUN mv /usr/bin/ssh /usr/bin/ssh.original \
+  && mv /tmp/ssh /usr/bin/ssh \
+  && chown root:root /usr/bin/ssh \
+  && chmod 755 /usr/bin/ssh
+  
+COPY hostingstart.html /home/site/wwwroot/hostingstart.html
+RUN chmod -R 777 /home \
+  && rm -rf /tmp/*
+
 EXPOSE 8181
 
-ENTRYPOINT [ "/tmp/startup.sh" ]
+ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
