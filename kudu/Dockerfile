@@ -22,8 +22,8 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && apt-get install -y openssh-client --no-install-recommends \
   && apt-get install -y vim tree --no-install-recommends \
   && apt-get install -y tcptraceroute \
-#  && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
-#  && chmod 755 /usr/bin/tcpping \
+  #  && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
+  #  && chmod 755 /usr/bin/tcpping \
   && wget -O /tmp/node-v4.4.7-linux-x64.tar.xz https://nodejs.org/dist/v4.4.7/node-v4.4.7-linux-x64.tar.xz \
   && wget -O /tmp/node-v4.5.0-linux-x64.tar.xz https://nodejs.org/dist/v4.5.0/node-v4.5.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v6.2.2-linux-x64.tar.xz https://nodejs.org/dist/v6.2.2/node-v6.2.2-linux-x64.tar.xz \
@@ -46,7 +46,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && a2enmod rewrite \
   && a2enmod proxy_ajp \
   && a2enmod deflate \
-  && a2enmod headers \ 
+  && a2enmod headers \
   && a2enmod proxy_balancer \
   && a2enmod proxy_connect \
   && a2enmod proxy_html \
@@ -83,7 +83,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && unzip -q /tmp/npm-5.0.3.zip -d /opt/npm/5.0.3/node_modules \
   && mv /opt/npm/5.0.3/node_modules/npm-5.0.3 /opt/npm/5.0.3/node_modules/npm \
   && ln -s /opt/npm/5.0.3/node_modules/npm/bin/npm /opt/npm/5.0.3/npm \
-  && chmod -R 755 /opt/npm/5.0.3/node_modules/npm/bin \ 
+  && chmod -R 755 /opt/npm/5.0.3/node_modules/npm/bin \
   && chown -R root:root /opt/npm \
   && mkdir -p /opt/nodejs \
   && tar xfJ /tmp/node-v4.4.7-linux-x64.tar.xz -C /opt/nodejs \
@@ -135,7 +135,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm /usr/bin/npm \
   && ln -s /opt/npm/3.10.10/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js \
   && ln -s /opt/npm/3.10.10/node_modules /usr/bin/node_modules
-  
+
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
 
 # Upgrade mono
@@ -151,7 +151,7 @@ RUN apt-get install -y libreadline-dev bzip2 build-essential libssl-dev zlib1g-d
   libgdbm-dev libncurses5-dev automake libtool bison pkg-config libffi-dev bison libxslt-dev \
   libxml2-dev libmysqlclient-dev --no-install-recommends
 
-# rbenv 
+# rbenv
 RUN git clone https://github.com/rbenv/rbenv.git /usr/local/.rbenv
 RUN chmod -R 777 /usr/local/.rbenv
 
@@ -164,7 +164,7 @@ RUN chmod -R 777 /usr/local/.rbenv/plugins/ruby-build
 
 RUN /usr/local/.rbenv/plugins/ruby-build/install.sh
 
-# Install ruby 2.3.1 
+# Install ruby 2.3.1
 ENV RUBY_CONFIGURE_OPTS=--disable-install-doc
 
 ENV RUBY_CFLAGS=-O3
@@ -189,23 +189,21 @@ ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 # SQL Server gem support
 RUN apt-get install -y unixodbc-dev freetds-dev freetds-bin
 
-
-
 # Install .NET Core
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libc6 \
-        libcurl3 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        libicu52 \
-        liblttng-ust0 \
-        libssl1.0.0 \
-        libstdc++6 \
-        libunwind8 \
-        libuuid1 \
-        zlib1g \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get install -y --no-install-recommends \
+  libc6 \
+  libcurl3 \
+  libgcc1 \
+  libgssapi-krb5-2 \
+  libicu52 \
+  liblttng-ust0 \
+  libssl1.0.0 \
+  libstdc++6 \
+  libunwind8 \
+  libuuid1 \
+  zlib1g \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install .NET Core SDK
 ENV DOTNET_SDK_VERSION 2.1.4
@@ -213,11 +211,11 @@ ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$
 ENV DOTNET_SDK_DOWNLOAD_SHA 05FE90457A8B77AD5A5EB2F22348F53E962012A55077AC4AD144B279F6CAD69740E57F165820BFD6104E88B30E93684BDE3E858F781541D4F110F28CD52CE2B7
 
 RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
-    && echo "$DOTNET_SDK_DOWNLOAD_SHA dotnet.tar.gz" | sha512sum -c - \
-    && mkdir -p /usr/share/dotnet \
-    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
-    && rm dotnet.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+  && echo "$DOTNET_SDK_DOWNLOAD_SHA dotnet.tar.gz" | sha512sum -c - \
+  && mkdir -p /usr/share/dotnet \
+  && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
+  && rm dotnet.tar.gz \
+  && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
 # Moving the package cache to the container image will require user packages to be repopulated
 # for each new build done in a new container instance, but it's *much* faster than
@@ -232,33 +230,33 @@ ENV NUGET_PACKAGES /var/nuget
 # so the Kudu user can access them; this can be removed if we run Kudu as root later.
 ENV NUGET_XMLDOC_MODE skip
 RUN mkdir /var/nuget \
-    && chmod a+rw /var/nuget \
-    && dotnet new -i "Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-*" \
-    && mkdir warmup \
-    && cd warmup \
-    && dotnet new \
-    && cd .. \
-    && rm -rf warmup \
-    && mkdir warmup \
-    && cd warmup \
-    && dotnet new mvc -f netcoreapp1.1 \
-    && dotnet restore \
-    && cd .. \
-    && rm -rf warmup \
-    && mkdir warmup \
-    && cd warmup \
-    && dotnet new mvc -f netcoreapp1.0 \
-    && dotnet restore \
-    && cd .. \
-    && rm -rf warmup \
-    && mkdir warmup \
-    && cd warmup \
-    && dotnet new mvc \
-    && dotnet restore \
-    && cd .. \
-    && rm -rf warmup \
-    && rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
+  && chmod a+rw /var/nuget \
+  && dotnet new -i "Microsoft.DotNet.Web.ProjectTemplates.1.x::1.0.0-*" \
+  && mkdir warmup \
+  && cd warmup \
+  && dotnet new \
+  && cd .. \
+  && rm -rf warmup \
+  && mkdir warmup \
+  && cd warmup \
+  && dotnet new mvc -f netcoreapp1.1 \
+  && dotnet restore \
+  && cd .. \
+  && rm -rf warmup \
+  && mkdir warmup \
+  && cd warmup \
+  && dotnet new mvc -f netcoreapp1.0 \
+  && dotnet restore \
+  && cd .. \
+  && rm -rf warmup \
+  && mkdir warmup \
+  && cd warmup \
+  && dotnet new mvc \
+  && dotnet restore \
+  && cd .. \
+  && rm -rf warmup \
+  && rm -rf /tmp/NuGetScratch \
+  && find /var/nuget -type d -exec chmod 777 {} \;
 
 # PHP5.6
 RUN apt-get update \
@@ -277,6 +275,26 @@ RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php')
 
 ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
+
+# Golang
+ENV GOLANG_VERSION=1.9.2
+ENV GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+ENV GOLANG_DOWNLOAD_SHA=de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b
+
+RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
+  && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
+  && tar -zxf golang.tar.gz -C /usr/local \
+  && rm golang.tar.gz
+
+ENV PATH /usr/local/go/bin:$PATH
+
+# Download Dep executable
+ENV DEP_VERSION=0.4.1
+ENV DEP_DOWNLOAD_URL=https://github.com/golang/dep/releases/download/v$DEP_VERSION/dep-linux-amd64
+ENV DEP_DOWNLOAD_SHA=31144e465e52ffbc0035248a10ddea61a09bf28b00784fd3fdd9882c8cbb2315
+RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
+  && echo "$DEP_DOWNLOAD_SHA /usr/local/go/bin/dep" | sha256sum -c - \
+  && chmod +x /usr/local/go/bin/dep
 
 # Install Kudu
 COPY kudu.conf /tmp
@@ -307,22 +325,22 @@ RUN npm install pm2@latest -g \
   && pm2 set pm2-logrotate:retain 7
 
 # Install LogAnalyzer
-COPY LogAnalyzer.zip /tmp 
-RUN mkdir /opt/LogAnalyzer \ 
+COPY LogAnalyzer.zip /tmp
+RUN mkdir /opt/LogAnalyzer \
   && unzip /tmp/LogAnalyzer.zip -d /opt/LogAnalyzer \
   && rm -f /tmp/LogAnalyzer.zip
 
 COPY startup.sh /
 RUN chmod 755 /startup.sh \
- && mkdir -p /home/LogFiles
+  && mkdir -p /home/LogFiles
 
 # Remove extraneous config mono config load that starts up
 # an unnecessary mono process
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 
 # Install webssh
-COPY webssh.zip /tmp 
-RUN mkdir /opt/webssh \ 
+COPY webssh.zip /tmp
+RUN mkdir /opt/webssh \
   && unzip /tmp/webssh.zip -d /opt/webssh
 
 # Replace ssh with wrapper script for CIFS mount permissions workaround
@@ -331,7 +349,7 @@ RUN mv /usr/bin/ssh /usr/bin/ssh.original \
   && mv /tmp/ssh /usr/bin/ssh \
   && chown root:root /usr/bin/ssh \
   && chmod 755 /usr/bin/ssh
-  
+
 COPY hostingstart.html /home/site/wwwroot/hostingstart.html
 RUN chmod -R 777 /home \
   && rm -rf /tmp/*
