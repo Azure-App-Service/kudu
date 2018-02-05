@@ -30,7 +30,7 @@ cd /etc/apache2/sites-available
 a2dissite 000-default.conf
 a2ensite kudu.conf
 
-/bin/bash -c "node /opt/webssh/index.js &"
+/bin/bash -c "pm2 start /opt/webssh/index.js -o /home/LogFiles/webssh/pm2.log -e /home/LogFiles/webssh/pm2.err &"
 
 export KUDU_RUN_USER="$USER_NAME"
 export MONO_IOMAP=all

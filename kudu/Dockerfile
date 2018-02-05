@@ -301,6 +301,11 @@ RUN npm install -g kudusync \
   && mkdir -p /opt/Kudu/local \
   && chmod 755 /opt/Kudu/local
 
+# Install pm2 and pm2-logrotate
+RUN npm install pm2@latest -g \
+  && pm2 install pm2-logrotate \
+  && pm2 set pm2-logrotate:retain 7
+
 # Install LogAnalyzer
 COPY LogAnalyzer.zip /tmp 
 RUN mkdir /opt/LogAnalyzer \ 
