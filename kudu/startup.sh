@@ -29,6 +29,7 @@ chown -R $USER_NAME:$GROUP_NAME /etc/mono/registry
 cd /etc/apache2/sites-available
 a2dissite 000-default.conf
 a2ensite kudu.conf
+mkdir -p /home/LogFiles/webssh
 
 /bin/bash -c "pm2 start /opt/webssh/index.js -o /home/LogFiles/webssh/pm2.log -e /home/LogFiles/webssh/pm2.err &"
 
