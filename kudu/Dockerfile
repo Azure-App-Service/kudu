@@ -276,15 +276,16 @@ RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php')
 ENV PHP_VERSION=7.0
 ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
-# Golang
-ENV GOLANG_VERSION=1.9.2
+# Golang and musl for cross compiling for alpine.
+ENV GOLANG_VERSION=1.10
 ENV GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ENV GOLANG_DOWNLOAD_SHA=de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b
+ENV GOLANG_DOWNLOAD_SHA=b5a64335f1490277b585832d1f6c7f8c6c11206cba5cd3f771dcb87b98ad1a33
 
 RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
   && tar -zxf golang.tar.gz -C /usr/local \
-  && rm golang.tar.gz
+  && rm golang.tar.gz \
+  && apt-get install musl-tools
 
 ENV PATH /usr/local/go/bin:$PATH
 
