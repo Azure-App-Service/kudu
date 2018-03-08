@@ -161,7 +161,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
 
 # Upgrade mono
-RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
+RUN echo "deb http://download.mono-project.com/repo/debian beta/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
   && apt-get update \
   && apt-get install -y libmono-system-net-http-webrequest4.0-cil --no-install-recommends
 
@@ -291,10 +291,16 @@ RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list
   && rm -f /etc/apt/sources.list.d/stretch.list
 
 # PHP7.2
-RUN apt-get install python-software-properties \
-  && add-apt-repository ppa:ondrej/php -y \
+#RUN apt-get install -y software-properties-common python-software-properties \ 
+#  && add-apt-repository ppa:ondrej/php \
+#  && apt-get update \
+#  && apt-get install -y --no-install-recommends php7.2-cli
+
+RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
+  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
   && apt-get update \
-  && apt-get install php7.2-cli -y --no-install-recommend
+  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
@@ -313,7 +319,7 @@ RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
   && tar -zxf golang.tar.gz -C /usr/local \
   && rm golang.tar.gz \
-  && apt-get install musl-tools
+  && apt-get install -y musl-tools
 
 ENV PATH /usr/local/go/bin:$PATH
 
