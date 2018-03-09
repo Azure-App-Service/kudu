@@ -373,6 +373,11 @@ RUN chmod 755 /startup.sh \
 # an unnecessary mono process
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 
+# Install TunnelExtension
+COPY TunnelExtension.zip /tmp
+RUN mkdir /opt/tunnelext \
+  && unzip /tmp/TunnelExtension.zip -d /opt/tunnelext
+
 # Install webssh
 COPY webssh.zip /tmp
 RUN mkdir /opt/webssh \
