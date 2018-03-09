@@ -33,6 +33,9 @@ mkdir -p /home/LogFiles/webssh
 
 /bin/bash -c "pm2 start /opt/webssh/index.js -o /home/LogFiles/webssh/pm2.log -e /home/LogFiles/webssh/pm2.err &"
 
+chmod 777 /opt/tunnelext/tunnelwatcher.sh
+/bin/bash -c "/opt/tunnelext/tunnelwatcher.sh dotnet /opt/tunnelext/DebugExtension.dll &"
+
 export KUDU_RUN_USER="$USER_NAME"
 export MONO_IOMAP=all
 export HOME=/home

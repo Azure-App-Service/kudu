@@ -139,7 +139,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
 
 # Upgrade mono
-RUN echo "deb http://download.mono-project.com/repo/debian beta/snapshots/c7-ms/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
+RUN echo "deb http://download.mono-project.com/repo/debian beta/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
   && apt-get update \
   && apt-get install -y libmono-system-net-http-webrequest4.0-cil --no-install-recommends
 
@@ -285,7 +285,7 @@ RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
   && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
   && tar -zxf golang.tar.gz -C /usr/local \
   && rm golang.tar.gz \
-  && apt-get install musl-tools
+  && apt-get install -y musl-tools
 
 ENV PATH /usr/local/go/bin:$PATH
 
@@ -338,6 +338,11 @@ RUN chmod 755 /startup.sh \
 # Remove extraneous config mono config load that starts up
 # an unnecessary mono process
 RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
+
+# Install TunnelExtension
+COPY TunnelExtension.zip /tmp
+RUN mkdir /opt/tunnelext \
+  && unzip /tmp/TunnelExtension.zip -d /opt/tunnelext
 
 # Install webssh
 COPY webssh.zip /tmp
