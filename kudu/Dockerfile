@@ -287,7 +287,7 @@ RUN apt-get update \
 # PHP7
 RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
   && apt-get update \
-  && apt-get install -y --no-install-recommends php7.0-cli php7.0-zip php7.0-mbstring php7.0-xml \
+  && apt-get install -y --no-install-recommends --allow-unauthenticated php7.0-cli php7.0-zip php7.0-mbstring php7.0-xml php7.0-mysql php7.0-pgsql php7.0-curl php7.0-json \
   && rm -f /etc/apt/sources.list.d/stretch.list
 
 # PHP7.2
@@ -295,7 +295,7 @@ RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
   && apt-get update \
-  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm
+  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json 
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
