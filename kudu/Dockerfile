@@ -291,11 +291,6 @@ RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list
   && rm -f /etc/apt/sources.list.d/stretch.list
 
 # PHP7.2
-#RUN apt-get install -y software-properties-common python-software-properties \ 
-#  && add-apt-repository ppa:ondrej/php \
-#  && apt-get update \
-#  && apt-get install -y --no-install-recommends php7.2-cli
-
 RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
@@ -335,7 +330,7 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
 RUN npm install -g kudusync \
-  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.70.10130.3232.zip \
+  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.71.10312.3298.zip \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
