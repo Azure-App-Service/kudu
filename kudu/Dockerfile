@@ -335,11 +335,11 @@ RUN npm install -g kudusync \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./70.10130.3232/* /opt/Kudu \
+  && cp -rf ./71.10312.3298/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./70.10130.3232 \
+  && rm -rf ./71.10312.3298 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
