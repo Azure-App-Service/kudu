@@ -239,9 +239,6 @@ RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
   && rm dotnet.tar.gz \
   && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
 
-# Enable detection of running in a container
-ENV DOTNET_RUNNING_IN_CONTAINER=true
-
 # Moving the package cache to the container image will require user packages to be repopulated
 # for each new build done in a new container instance, but it's *much* faster than
 # using a location on the user's site volume and does not require them to use their storage, and
