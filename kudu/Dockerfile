@@ -93,6 +93,21 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && mv /opt/npm/5.0.3/node_modules/npm-5.0.3 /opt/npm/5.0.3/node_modules/npm \
   && ln -s /opt/npm/5.0.3/node_modules/npm/bin/npm /opt/npm/5.0.3/npm \
   && chmod -R 755 /opt/npm/5.0.3/node_modules/npm/bin \
+  && mkdir -p /opt/npm/5.4.2/node_modules \
+  && unzip -q /tmp/npm-5.4.2.zip -d /opt/npm/5.4.2/node_modules \
+  && mv /opt/npm/5.4.2/node_modules/npm-5.4.2 /opt/npm/5.4.2/node_modules/npm \
+  && ln -s /opt/npm/5.4.2/node_modules/npm/bin/npm /opt/npm/5.4.2/npm \
+  && chmod -R 755 /opt/npm/5.4.2/node_modules/npm/bin \
+  && mkdir -p /opt/npm/5.6.0/node_modules \
+  && unzip -q /tmp/npm-5.6.0.zip -d /opt/npm/5.6.0/node_modules \
+  && mv /opt/npm/5.6.0/node_modules/npm-5.6.0 /opt/npm/5.6.0/node_modules/npm \
+  && ln -s /opt/npm/5.6.0/node_modules/npm/bin/npm /opt/npm/5.6.0/npm \
+  && chmod -R 755 /opt/npm/5.6.0/node_modules/npm/bin \
+  && mkdir -p /opt/npm/6.0.1/node_modules \
+  && unzip -q /tmp/npm-6.0.1.zip -d /opt/npm/6.0.1/node_modules \
+  && mv /opt/npm/6.0.1/node_modules/npm-6.0.1 /opt/npm/6.0.1/node_modules/npm \
+  && ln -s /opt/npm/6.0.1/node_modules/npm/bin/npm /opt/npm/6.0.1/npm \
+  && chmod -R 755 /opt/npm/6.0.1/node_modules/npm/bin \
   && chown -R root:root /opt/npm \
   && mkdir -p /opt/nodejs \
   && tar xfJ /tmp/node-v4.4.7-linux-x64.tar.xz -C /opt/nodejs \
