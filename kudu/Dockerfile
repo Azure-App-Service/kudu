@@ -171,6 +171,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -f node-v10.1.0-linux-x64.tar.xz \
   && mv /opt/nodejs/node-v10.1.0-linux-x64 /opt/nodejs/10.1.0 \
   && echo "6.0.1" > /opt/nodejs/10.1.0/npm.txt \
+  && ln -s /opt/npm/6.0.1/node_modules/npm/bin/npm /opt/nodejs/10.1.0/bin/npm \
   && chown -R root:root /opt/nodejs \
   && ln -s /opt/nodejs/6.11.0/bin/node /opt/nodejs/node \
   && ln -s /opt/nodejs/6.11.0/npm.txt /opt/nodejs/npm.txt \
