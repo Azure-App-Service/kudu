@@ -321,7 +321,20 @@ RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
   && apt-get update \
-  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json 
+  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json php7.2-bcmath php7.2-dom php7.2-gd php7.2-imap php7.2-intl php7.2-mbstring php7.2-odbc php7.2-SimpleXML php7.2-soap php7.2-sqlite php7.2-tidy php7.2-wddx php7.2-xmlrpc php7.2-xmlwriter php7.2-xsl php7.2-zip
+
+# Microsoft Drivers for PHP for SQL Server
+RUN apt-get update \
+  && apt-get install -y php7.2-dev php-pear \
+  && pecl install sqlsrv pdo_sqlsrv \
+  && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+  && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini \
+  && apt-get install -y libapache2-mod-php7.2 apache2 \
+  && a2dismod mpm_event \
+  && a2enmod mpm_prefork \
+  && a2enmod php7.2 \
+  && echo "extension=pdo_sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/30-pdo_sqlsrv.ini \
+  && echo "extension=sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/20-sqlsrv.ini
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
