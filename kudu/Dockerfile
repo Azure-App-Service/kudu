@@ -308,7 +308,18 @@ RUN mkdir /var/nuget \
 
 # PHP5.6
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends php5-cli
+  && apt-get install -y apt-transport-https lsb-release ca-certificates \
+  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
+  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
+  && apt-get update \
+  && apt-get install -y --no-install-recommends php5-cli php5.6-zip php5.6-mbstring php5.6-xml php5-mysql php5-pgsql php5-curl php5-json php5-gd php5-gmp php5-imagick php5-imap php5-intl php5-ldap php5.6-mbstring php5-odbc php5-readline php5.6-SimpleXML php5.6-soap php5-sqlite php5-tidy php5.6-wddx php5-xmlrpc php5.6-xmlwriter php5-xsl
+
+# install apache2
+RUN apt-get install -y apache2 
+
+# mcrypt
+RUN apt-get install -y --no-install-recommends php5-mcrypt \
+  && php5enmod mcrypt 
 
 # PHP7
 RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
@@ -321,7 +332,23 @@ RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
   && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
   && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
   && apt-get update \
-  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json 
+  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json php7.2-bcmath php7.2-dom php7.2-gd php7.2-gmp php7.2-imagick php7.2-imap php7.2-intl php7.2-ldap php7.2-mbstring php7.2-odbc php7.2-SimpleXML php7.2-soap php7.2-sqlite php7.2-tidy php7.2-wddx php7.2-xmlrpc php7.2-xmlwriter php7.2-xsl php7.2-zip
+
+# Microsoft Drivers for PHP for SQL Server
+RUN apt-get update \
+  && apt-get install -y php7.2-dev php-pear \
+  && pecl install sqlsrv pdo_sqlsrv \
+  && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+  && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini \
+  && apt-get install -y libapache2-mod-php7.2 \
+  && a2dismod mpm_event \
+  && a2enmod mpm_prefork \
+  && a2enmod php7.2 \
+  && echo "extension=pdo_sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/30-pdo_sqlsrv.ini \
+  && echo "extension=sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/20-sqlsrv.ini 
+
+# restart apache2  
+RUN service apache2 restart
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
@@ -356,16 +383,16 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
 RUN npm install -g kudusync \
-  && wget -O /tmp/Kudu.zip https://nildev.blob.core.windows.net/kudu/Kudu.71.10312.3298.zip \
+  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.75.10626.3456.zip \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./71.10312.3298/* /opt/Kudu \
+  && cp -rf ./75.10626.3456/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./71.10312.3298 \
+  && rm -rf ./75.10626.3456 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
