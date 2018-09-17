@@ -202,11 +202,26 @@ RUN  apt-get update; \
      apt-get install -y --no-install-recommends \
      libpng-dev \
      libpq-dev \
+     libc-client-dev \
+     libsqlite3-dev \
+     libgmp-dev \
+     libmcrypt-dev \
      libldap2-dev \
+     libtidy-dev \
+     libkrb5-dev \
+     libicu-dev \
+     libedit-dev \
+     libxml2-dev \
+     libxslt-dev \
      unixodbc-dev \
-     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
+     libmagickwand-dev \
+     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
+     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
+     && pecl install imagick-beta
+ 
 
 RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+   &&   docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
    &&   docker-php-ext-install \
         mysqli \
         opcache \
@@ -215,8 +230,25 @@ RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         pdo_pgsql \
         pgsql \
         zip \
-        pdo_odbc
+        pdo_odbc \
+        json \
+        gd \
+        gmp \
+        imap \
+        intl \
+        ldap \
+        mcrypt \
+        readline \
+        simplexml \
+        soap \
+        pdo_sqlite \
+        tidy \
+        wddx \
+        xmlrpc \
+        xmlwriter \
+        xsl 
 
+RUN docker-php-source delete
 
 COPY test/ /usr/local/php/5.6/test
 
