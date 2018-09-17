@@ -59,7 +59,7 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ENV GPG_KEYS 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+ENV GPG_KEYS 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
 
 ENV PHP_VERSION 7.0.32
 ENV PHP_URL="https://secure.php.net/get/php-7.0.32.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.0.32.tar.xz.asc/from/this/mirror"
@@ -194,19 +194,34 @@ RUN set -eux; \
 	/usr/local/php/7.0/bin/pecl update-channels; \
 	rm -rf /tmp/pear ~/.pearrc
 
-COPY docker-php-ext-* docker-php-entrypoint /usr/local/php/7.0/bin/
-
 ENV PATH=$PATH:/usr/local/php/7.0/bin
+
+COPY docker-php-ext-* /usr/local/php/7.0/bin/
 
 RUN  apt-get update; \
      apt-get install -y --no-install-recommends \
      libpng-dev \
      libpq-dev \
+     libc-client-dev \
+     libsqlite3-dev \
+     libgmp-dev \
+     libmcrypt-dev \
      libldap2-dev \
+     libtidy-dev \
+     libkrb5-dev \
+     libicu-dev \
+     libedit-dev \
+     libxml2-dev \
+     libxslt-dev \
      unixodbc-dev \
-     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
+     libmagickwand-dev \
+     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
+     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
+     && pecl install imagick-beta
+ 
 
 RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+   &&   docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
    &&   docker-php-ext-install \
         mysqli \
         opcache \
@@ -215,8 +230,25 @@ RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         pdo_pgsql \
         pgsql \
         zip \
-        pdo_odbc
+        pdo_odbc \
+        json \
+        gd \
+        gmp \
+        imap \
+        intl \
+        ldap \
+        mcrypt \
+        readline \
+        simplexml \
+        soap \
+        pdo_sqlite \
+        tidy \
+        wddx \
+        xmlrpc \
+        xmlwriter \
+        xsl 
 
+RUN docker-php-source delete
 
 COPY test/ /usr/local/php/7.0/test
 
