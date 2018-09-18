@@ -197,7 +197,7 @@ RUN set -eux; \
 	/usr/local/php/7.2/bin/pecl update-channels; \
 	rm -rf /tmp/pear ~/.pearrc
 
-COPY docker-php-ext-* docker-php-entrypoint /usr/local/php/7.2/bin/
+COPY docker-php-ext-* /usr/local/php/7.2/bin/
 
 ENV PATH=$PATH:/usr/local/php/7.2/bin
 
@@ -205,11 +205,26 @@ RUN  apt-get update; \
      apt-get install -y --no-install-recommends \
      libpng-dev \
      libpq-dev \
+     libc-client-dev \
+     libsqlite3-dev \
+     libgmp-dev \
+     libmcrypt-dev \
      libldap2-dev \
+     libtidy-dev \
+     libkrb5-dev \
+     libicu-dev \
+     libedit-dev \
+     libxml2-dev \
+     libxslt-dev \
      unixodbc-dev \
-     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
+     libmagickwand-dev \
+     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
+     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
+     && pecl install imagick-beta
+ 
 
 RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+   &&   docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
    &&   docker-php-ext-install \
         mysqli \
         opcache \
@@ -218,8 +233,31 @@ RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         pdo_pgsql \
         pgsql \
         zip \
-        pdo_odbc
+        pdo_odbc \
+        json \
+        gd \
+        gmp \
+        dom \
+        bcmath \
+        imap \
+        intl \
+        ldap \
+        readline \
+        simplexml \
+        soap \
+        pdo_sqlite \
+        tidy \
+        wddx \
+        xmlrpc \
+        xmlwriter \
+        xsl \
+        zip
 
+RUN  pecl install sqlsrv pdo_sqlsrv \
+     &&  echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+     && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini
+
+RUN docker-php-source delete
 
 COPY test/ /usr/local/php/7.2/test
 
