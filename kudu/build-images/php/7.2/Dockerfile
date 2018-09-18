@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:stretch-slim
+FROM debian:jessie
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -26,7 +26,7 @@ ENV PHPIZE_DEPS \
 		libc-dev \
 		make \
 		pkg-config \
-		re2c
+		re2c 
 
 # persistent / runtime deps
 RUN apt-get update && apt-get install -y \
@@ -34,7 +34,8 @@ RUN apt-get update && apt-get install -y \
 		ca-certificates \
 		curl \
 		xz-utils \
-	--no-install-recommends && rm -r /var/lib/apt/lists/*
+                wget \
+	        --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 # custom for app-service-build
 ENV PHP_ROOT_PATH /usr/local/php/7.2
@@ -64,6 +65,12 @@ ENV GPG_KEYS 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC
 ENV PHP_VERSION 7.2.10
 ENV PHP_URL="https://secure.php.net/get/php-7.2.10.tar.xz/from/this/mirror" PHP_ASC_URL="https://secure.php.net/get/php-7.2.10.tar.xz.asc/from/this/mirror"
 ENV PHP_SHA256="01c2154a3a8e3c0818acbdbc1a956832c828a0380ce6d1d14fea495ea21804f0" PHP_MD5=""
+
+RUN wget http://ftp.us.debian.org/debian/pool/main/libs/libsodium/libsodium-dev_1.0.11-2_amd64.deb \
+    && wget http://ftp.us.debian.org/debian/pool/main/libs/libsodium/libsodium18_1.0.11-2_amd64.deb \
+    && dpkg -i libsodium18_1.0.11-2_amd64.deb \
+    && dpkg -i libsodium-dev_1.0.11-2_amd64.deb
+
 
 RUN set -xe; \
 	\
@@ -106,6 +113,7 @@ RUN set -xe; \
 
 COPY docker-php-source /usr/local/bin/
 
+
 RUN set -eux; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
@@ -113,9 +121,9 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libcurl4-openssl-dev \
 		libedit-dev \
-     	libsodium-dev \
+                libsodium-dev \
 		libsqlite3-dev \
-		libssl1.0-dev \
+		libssl-dev \
 		libxml2-dev \
 		zlib1g-dev \
 		${PHP_EXTRA_BUILD_DEPS:-} \

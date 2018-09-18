@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:stretch-slim
+FROM debian:jessie
 
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
@@ -114,7 +114,7 @@ RUN set -eux; \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libsqlite3-dev \
-		libssl1.0-dev \
+		libssl-dev \
 		libxml2-dev \
 		zlib1g-dev \
 		${PHP_EXTRA_BUILD_DEPS:-} \
