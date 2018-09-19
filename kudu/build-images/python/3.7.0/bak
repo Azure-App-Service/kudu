@@ -8,43 +8,40 @@ ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
 # runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates \
-		netbase \
-	&& rm -rf /var/lib/apt/lists/*
 
-RUN set -ex \
-	\
-	&& savedAptMark="$(apt-mark showmanual)" \
-	&& apt-get update && apt-get install -y --no-install-recommends \
-		dpkg-dev \
-		gcc \
-		libbz2-dev \
-		libc6-dev \
-		libexpat1-dev \
-		libffi-dev \
-		libgdbm-dev \
-		liblzma-dev \
-		libncursesw5-dev \
-		libreadline-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		make \
-		tk-dev \
-		uuid-dev \
-		wget \
-		xz-utils \
-		zlib1g-dev \
-# as of Stretch, "gpg" is no longer included by default
-		$(command -v gpg > /dev/null || echo 'gnupg dirmngr')
+RUN mkdir -p /usr/local/python/3.7.0/src && mkdir /usr/local/python/3.7.0/bin && mkdir -p  /usr/local/python/3.7.0/lib
 
-
-RUN mkdir -p /usr/local/python/3.6.6/src && mkdir /usr/local/python/3.6.6/bin && mkdir -p  /usr/local/python/3.6.6/lib
-
-WORKDIR /usr/local/python/3.6.6/src
-ENV PYTHON_VERSION=3.6.6
+WORKDIR /usr/local/python/3.7.0/src
+ENV PYTHON_VERSION=3.7.0
 ENV GPG_KEY=0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 ENV PIP_VERSION=18.0
+
+
+
+RUN set -ex \
+        \
+        && savedAptMark="$(apt-mark showmanual)" \
+        && apt-get update && apt-get install -y --no-install-recommends \
+                dpkg-dev \
+                gcc \
+                libbz2-dev \
+                libc6-dev \
+                libexpat1-dev \
+                libffi-dev \
+                libgdbm-dev \
+                liblzma-dev \
+                libncursesw5-dev \
+                libreadline-dev \
+                libsqlite3-dev \
+                openssl \
+                make \
+                tk-dev \
+                uuid-dev \
+                wget \
+                xz-utils \
+                zlib1g-dev \
+# as of Stretch, "gpg" is no longer included by default
+                $(command -v gpg > /dev/null || echo 'gnupg dirmngr')
 
 
 RUN set -ex \
@@ -68,14 +65,14 @@ RUN set -ex \
         && cd /usr/src/python \
         && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
         && ./configure \
-                --prefix=/usr/local/python/3.6.6 \
+                --prefix=/usr/local/python/3.7.0 \
                 --build="$gnuArch" \
                 --enable-loadable-sqlite-extensions \
                 --enable-shared \
                 --with-system-expat \
                 --with-system-ffi \
-                --without-ensurepip \
-                LDFLAGS="-L/usr/local/python/${PYTHON_VERSION}/extlib/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/extlib/lib" \
+                --without-ensurepip  \
+                LDFLAGS=" -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/lib" \
         && make -j "$(nproc)" \
         && make install \
         && ldconfig \

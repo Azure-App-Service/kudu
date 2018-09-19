@@ -356,10 +356,7 @@ COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
 
 ENV PATH /usr/local/php/7.2/bin:$PATH
 
-# install libssl1.0.2 
-RUN wget http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_1.0.2l-2+deb9u3_amd64.deb \ 
-  && apt-get install -y dialog libsodium-dev libsodium18\ 
-  && dpkg -i libssl1.0.2_1.0.2l-2+deb9u3_amd64.deb  
+RUN apt-get install -y libsodium-dev libsodium18 
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
@@ -392,31 +389,72 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
 
 # Python 
 # ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 
 # runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		tcl \
-		tk \
+# Python 
+# ensure local python is preferred over distribution python
+
+
+RUN set -ex \
+        \
+        && savedAptMark="$(apt-mark showmanual)" \
+        && apt-get update && apt-get install -y --no-install-recommends \
                 dpkg-dev \
-                tcl-dev \
+                gcc \
+                libbz2-dev \
+                libc6-dev \
+                libexpat1-dev \
+                libffi-dev \
+                libgdbm-dev \
+                liblzma-dev \
+                libncursesw5-dev \
+                libreadline-dev \
+                libsqlite3-dev \
+                libssl-dev \
+                apt-transport-https \
+                lsb-release  \
+                ca-certificates \
+                make \
                 tk-dev \
-    libssl-dev \
-	&& rm -rf /var/lib/apt/lists/*
+                tcl-dev \
+                uuid-dev \
+                wget \
+                xz-utils \
+                zlib1g-dev \
+# as of Stretch, "gpg" is no longer included by default
+                $(command -v gpg > /dev/null || echo 'gnupg dirmngr')
 
 
-RUN  mkdir -p /usr/local/python/3.6.6 \ 
-     && mkdir -p /usr/local/python/3.7.0
-
-COPY --from=python-3.6-build /usr/local/python/3.6.6 /usr/local/python/3.6.6
+COPY --from=python-3.7-build /usr/local/openssl/ /usr/local/openssl
 COPY --from=python-3.7-build /usr/local/python/3.7.0 /usr/local/python/3.7.0
-
 ENV PATH /usr/local/python/3.7.0/bin:$PATH
-
 RUN cd /usr/local/python/3.7.0/bin && ln -s python3 python
+
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ENV PYTHON_PIP_VERSION 18.0
+
+RUN set -ex; \
+	\
+	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
+	\
+	python get-pip.py \
+                --prefix=/usr/local/python/3.7.0 \
+		--disable-pip-version-check \
+		--no-cache-dir \
+		"pip==$PYTHON_PIP_VERSION" \
+	; \
+	pip --version; \
+	\
+	find /usr/local -depth \
+		\( \
+			\( -type d -a \( -name test -o -name tests \) \) \
+			-o \
+			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
+		\) -exec rm -rf '{}' +; \
+	rm -f get-pip.py
 
 # Install Kudu
 COPY kudu.conf /tmp
@@ -485,11 +523,6 @@ COPY KuduStaticFiles/linux_favicon.ico /opt/Kudu/linux_favicon.ico
 
 RUN chmod -R 777 /home \
   && rm -rf /tmp/* 
-
-
-RUN wget http://ftp.us.debian.org/debian/pool/main/libp/libpng1.6/libpng16-16_1.6.28-1_amd64.deb \
-  && dpkg -i libpng16-16_1.6.28-1_amd64.deb
-
 
 EXPOSE 8181
 

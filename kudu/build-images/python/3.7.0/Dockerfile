@@ -1,4 +1,5 @@
-FROM debian:stretch-slim
+FROM buildpack-deps:jessie-curl
+#FROM debian:stretch-slim
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -39,6 +40,17 @@ RUN set -ex \
 		$(command -v gpg > /dev/null || echo 'gnupg dirmngr')
 
 
+RUN wget -O openssl.tar.gz "https://www.openssl.org/source/openssl-1.1.1.tar.gz" \
+ && mkdir -p /usr/src/openssl \
+ && tar -xvzC /usr/src/openssl --strip-components=1 -f openssl.tar.gz 
+
+RUN cd /usr/src/openssl \
+ && mkdir -p /usr/local/openssl \
+ && ./config --prefix=/usr/local/openssl \
+ && make \
+ && make install 
+
+
 RUN mkdir -p /usr/local/python/3.7.0/src && mkdir /usr/local/python/3.7.0/bin && mkdir -p  /usr/local/python/3.7.0/lib
 
 WORKDIR /usr/local/python/3.7.0/src
@@ -74,22 +86,22 @@ RUN set -ex \
                 --enable-shared \
                 --with-system-expat \
                 --with-system-ffi \
-                --without-ensurepip \
-                LDFLAGS="-L/usr/local/python/${PYTHON_VERSION}/extlib/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/extlib/lib" \
-                CPPFLAGS="-I/usr/local/python/${PYTHON_VERSION}/extlib/include" \
+                --without-ensurepip  \
+                --with-openssl=/usr/local/openssl \
+                LDFLAGS="-L/usr/local/python/${PYTHON_VERSION}/extlib/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/lib -Wl,--rpath=/usr/local/python/${PYTHON_VERSION}/extlib/lib -Wl,--rpath=/usr/local/openssl/lib" \
         && make -j "$(nproc)" \
         && make install \
         && ldconfig \
         \
-        && apt-get purge -y --auto-remove $buildDeps \
+#        && apt-get purge -y --auto-remove $buildDeps \
         \
         && find /usr/local -depth \
                 \( \
                         \( -type d -a \( -name test -o -name tests \) \) \
                         -o \
                         \( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-                \) -exec rm -rf '{}' + \
-        && rm -rf /usr/src/python
+                \) -exec rm -rf '{}' + 
+#        && rm -rf /usr/src/python
 
 
 ENV PYTHON_PATH=/usr/local/python/$PYTHON_VERSION
