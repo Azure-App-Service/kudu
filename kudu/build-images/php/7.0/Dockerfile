@@ -250,6 +250,12 @@ RUN  docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 
 RUN docker-php-source delete
 
+# PHP Composer
+RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+  && php /tmp/composer-setup.php --install-dir=/usr/local/php/7.0/bin --filename=composer --quiet \
+  && rm -f /tmp/composer-setup.php
+
+
 COPY test/ /usr/local/php/7.0/test
 
 CMD ["/usr/local/php/7.0/bin/php", "/usr/local/php/7.0/test/runtest.php"]

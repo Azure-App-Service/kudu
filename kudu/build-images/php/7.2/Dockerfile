@@ -269,4 +269,9 @@ RUN docker-php-source delete
 
 COPY test/ /usr/local/php/7.2/test
 
+# PHP Composer
+RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+  && php /tmp/composer-setup.php --install-dir=/usr/local/php/7.2/bin --filename=composer --quiet \
+  && rm -f /tmp/composer-setup.php
+
 CMD ["/usr/local/php/7.2/bin/php", "/usr/local/php/7.2/test/runtest.php"]

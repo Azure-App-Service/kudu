@@ -315,8 +315,8 @@ RUN mkdir /var/nuget \
 # install apache2
 RUN apt-get install -y apache2 
 RUN service apache2 restart
-ENV PYTHONIOENCODING UTF-8
 
+# Section PHP
 RUN  apt-get update; \
      apt-get install -y --no-install-recommends \
      libcurl4-openssl-dev \
@@ -337,11 +337,13 @@ RUN  apt-get update; \
      libxslt-dev \
      unixodbc-dev \
      libmagickwand-dev \
-		dpkg-dev \
-		file \
-		g++ \
-		gcc \
-		libc-dev \
+     dpkg-dev \
+     file \
+     g++ \
+     gcc \
+     libc-dev \
+     libsodium-dev \
+     libsodium18 \
      && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
 
 
@@ -356,7 +358,9 @@ COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
 
 ENV PATH /usr/local/php/7.2/bin:$PATH
 
-RUN apt-get install -y libsodium-dev libsodium18 
+ENV PHP_5_6_PATH /usr/local/php/5.6/bin
+ENV PHP_7_0_PATH /usr/local/php/7.0/bin
+ENV PHP_7_2_PATH /usr/local/php/7.2/bin
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
@@ -387,16 +391,7 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
   && echo "$DEP_DOWNLOAD_SHA /usr/local/go/bin/dep" | sha256sum -c - \
   && chmod +x /usr/local/go/bin/dep
 
-# Python 
-# ensure local python is preferred over distribution python
-
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-
-# runtime dependencies
-# Python 
-# ensure local python is preferred over distribution python
-
+# Section PYTHON
 
 RUN set -ex \
         \
@@ -431,30 +426,9 @@ RUN set -ex \
 COPY --from=python-3.7-build /usr/local/openssl/ /usr/local/openssl
 COPY --from=python-3.7-build /usr/local/python/3.7.0 /usr/local/python/3.7.0
 ENV PATH /usr/local/python/3.7.0/bin:$PATH
-RUN cd /usr/local/python/3.7.0/bin && ln -s python3 python
+ENV PYTHON_3_7_PATH /usr/local/python/3.7.0/bin
+ENV PYTHON_3_6_PATH /usr/local/python/3.6.6/bin
 
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 18.0
-
-RUN set -ex; \
-	\
-	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
-	python get-pip.py \
-                --prefix=/usr/local/python/3.7.0 \
-		--disable-pip-version-check \
-		--no-cache-dir \
-		"pip==$PYTHON_PIP_VERSION" \
-	; \
-	pip --version; \
-	\
-	find /usr/local -depth \
-		\( \
-			\( -type d -a \( -name test -o -name tests \) \) \
-			-o \
-			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-		\) -exec rm -rf '{}' +; \
-	rm -f get-pip.py
 
 # Install Kudu
 COPY kudu.conf /tmp
@@ -520,6 +494,7 @@ COPY KuduStaticFiles/503.html /opt/Kudu/503.html
 COPY KuduStaticFiles/_Layout.cshtml /opt/Kudu/_Layout.cshtml
 COPY KuduStaticFiles/AppService.png /opt/Kudu/Content/Images/AppService.png
 COPY KuduStaticFiles/linux_favicon.ico /opt/Kudu/linux_favicon.ico
+COPY deploy.bash.python.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates/deploy.bash.python.template
 
 RUN chmod -R 777 /home \
   && rm -rf /tmp/* 
