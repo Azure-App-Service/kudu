@@ -423,7 +423,8 @@ RUN set -ex \
                 $(command -v gpg > /dev/null || echo 'gnupg dirmngr')
 
 
-COPY --from=python-3.7-build /usr/local/openssl/ /usr/local/openssl
+COPY --from=python-3.6-build /usr/local/python/3.6.6 /usr/local/python/3.6.6
+COPY --from=python-3.7-build /usr/local/openssl /usr/local/openssl
 COPY --from=python-3.7-build /usr/local/python/3.7.0 /usr/local/python/3.7.0
 ENV PATH /usr/local/python/3.7.0/bin:$PATH
 ENV PYTHON_3_7_PATH /usr/local/python/3.7.0/bin
