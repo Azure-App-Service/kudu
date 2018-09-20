@@ -17,7 +17,6 @@ export PIP3="pip3"
 if [ "$WEBSITE_PYTHON_VERSION" = "3.6" ]; then
     export ANTENV="antenv3.6"
     export PYTHON3="/usr/local/python/3.6.6/bin/python3.6"
-    export PIP3="/usr/local/python/3.6.6/bin/pip3"
 fi
 
 echo "$DEPLOYMENT_SOURCE"
