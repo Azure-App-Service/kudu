@@ -1,4 +1,10 @@
-FROM buildpack-deps:jessie-curl
+FROM appsvctest/php-build-5.6:latest as php5.6-build
+FROM appsvctest/php-build-7.0:latest as php7.0-build
+FROM appsvctest/php-build-7.2:latest as php7.2-build
+FROM appsvctest/python-3.6-build:latest as python-3.6-build
+FROM appsvctest/python-3.7-build:latest as python-3.7-build
+
+FROM buildpack-deps:jessie-curl as main
 MAINTAINER Nazim Lala <naziml@microsoft.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -306,49 +312,55 @@ RUN mkdir /var/nuget \
   && rm -rf /tmp/NuGetScratch \
   && find /var/nuget -type d -exec chmod 777 {} \;
 
-# PHP5.6
-RUN apt-get update \
-  && apt-get install -y apt-transport-https lsb-release ca-certificates \
-  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
-  && apt-get update \
-  && apt-get install -y --no-install-recommends php5-cli php5.6-zip php5.6-mbstring php5.6-xml php5-mysql php5-pgsql php5-curl php5-json php5-gd php5-gmp php5-imagick php5-imap php5-intl php5-ldap php5.6-mbstring php5-odbc php5-readline php5.6-SimpleXML php5.6-soap php5-sqlite php5-tidy php5.6-wddx php5-xmlrpc php5.6-xmlwriter php5-xsl
-
 # install apache2
 RUN apt-get install -y apache2 
-
-# mcrypt
-RUN apt-get install -y --no-install-recommends php5-mcrypt \
-  && php5enmod mcrypt 
-
-# PHP7
-RUN echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list.d/stretch.list \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends --allow-unauthenticated php7.0-cli php7.0-zip php7.0-mbstring php7.0-xml php7.0-mysql php7.0-pgsql php7.0-curl php7.0-json \
-  && rm -f /etc/apt/sources.list.d/stretch.list
-
-# PHP7.2
-RUN apt-get install -y apt-transport-https lsb-release ca-certificates \
-  && wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg \
-  && sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list' \ 
-  && apt-get update \
-  && apt-get install -y php7.2 php7.2-common php7.2-cli php7.2-fpm php7.2-mysql php7.2-pgsql php7.2-curl php7.2-json php7.2-bcmath php7.2-dom php7.2-gd php7.2-gmp php7.2-imagick php7.2-imap php7.2-intl php7.2-ldap php7.2-mbstring php7.2-odbc php7.2-SimpleXML php7.2-soap php7.2-sqlite3 php7.2-tidy php7.2-wddx php7.2-xmlrpc php7.2-xmlwriter php7.2-xsl php7.2-zip
-
-# Microsoft Drivers for PHP for SQL Server
-RUN apt-get update \
-  && apt-get install -y php7.2-dev php-pear \
-  && pecl install sqlsrv pdo_sqlsrv \
-  && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-  && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini \
-  && apt-get install -y libapache2-mod-php7.2 \
-  && a2dismod mpm_event \
-  && a2enmod mpm_prefork \
-  && a2enmod php7.2 \
-  && echo "extension=pdo_sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/30-pdo_sqlsrv.ini \
-  && echo "extension=sqlsrv.so" >> /etc/php/7.2/apache2/conf.d/20-sqlsrv.ini 
-
-# restart apache2  
 RUN service apache2 restart
+
+# Section PHP
+RUN  apt-get update; \
+     apt-get install -y --no-install-recommends \
+     libcurl4-openssl-dev \
+     libssl-dev \
+     zlib1g-dev \
+     libpng-dev \
+     libpq-dev \
+     libc-client-dev \
+     libsqlite3-dev \
+     libgmp-dev \
+     libmcrypt-dev \
+     libldap2-dev \
+     libtidy-dev \
+     libkrb5-dev \
+     libicu-dev \
+     libedit-dev \
+     libxml2-dev \
+     libxslt-dev \
+     unixodbc-dev \
+     libmagickwand-dev \
+     dpkg-dev \
+     file \
+     g++ \
+     gcc \
+     libc-dev \
+     libsodium-dev \
+     libsodium18 \
+     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
+
+
+RUN mkdir -p /usr/local/php/5.6
+COPY --from=php5.6-build /usr/local/php/5.6 /usr/local/php/5.6
+
+RUN mkdir -p /usr/local/php/7.0
+COPY --from=php7.0-build /usr/local/php/7.0 /usr/local/php/7.0
+
+RUN mkdir -p /usr/local/php/7.2
+COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
+
+ENV PATH /usr/local/php/7.2/bin:$PATH
+
+ENV PHP_5_6_PATH /usr/local/php/5.6/bin
+ENV PHP_7_0_PATH /usr/local/php/7.0/bin
+ENV PHP_7_2_PATH /usr/local/php/7.2/bin
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
@@ -379,111 +391,60 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
   && echo "$DEP_DOWNLOAD_SHA /usr/local/go/bin/dep" | sha256sum -c - \
   && chmod +x /usr/local/go/bin/dep
 
-# Python 
-# ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
-
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
-
-# runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		tcl \
-		tk \
-                libssl-dev \
-	&& rm -rf /var/lib/apt/lists/*
-
-ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PYTHON_VERSION 3.7.0
+# Section PYTHON
 
 RUN set -ex \
-	&& buildDeps=' \
-		dpkg-dev \
-		tcl-dev \
-		tk-dev \
-	' \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	\
-	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
-	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
-	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
-	&& rm -rf "$GNUPGHOME" python.tar.xz.asc \
-	&& mkdir -p /usr/src/python \
-	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
-	&& rm python.tar.xz \
-	\
-	&& cd /usr/src/python \
-	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& ./configure \
-		--build="$gnuArch" \
-		--enable-loadable-sqlite-extensions \
-		--enable-shared \
-		--with-system-expat \
-		--with-system-ffi \
-		--without-ensurepip \
-	&& make -j "$(nproc)" \
-	&& make install \
-	&& ldconfig \
-	\
-	&& apt-get purge -y --auto-remove $buildDeps \
-	\
-	&& find /usr/local -depth \
-		\( \
-			\( -type d -a \( -name test -o -name tests \) \) \
-			-o \
-			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-		\) -exec rm -rf '{}' + \
-	&& rm -rf /usr/src/python
-
-# make some useful symlinks that are expected to exist
-RUN cd /usr/local/bin \
-	&& ln -s idle3 idle \
-	&& ln -s pydoc3 pydoc \
-	&& ln -s python3 python \
-	&& ln -s python3-config python-config
-
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 10.0.1
-
-RUN set -ex; \
-	\
-	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
-	python get-pip.py \
-		--disable-pip-version-check \
-		--no-cache-dir \
-		"pip==$PYTHON_PIP_VERSION" \
-	; \
-	pip --version; \
-	\
-	find /usr/local -depth \
-		\( \
-			\( -type d -a \( -name test -o -name tests \) \) \
-			-o \
-			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-		\) -exec rm -rf '{}' +; \
-	rm -f get-pip.py
+        \
+        && savedAptMark="$(apt-mark showmanual)" \
+        && apt-get update && apt-get install -y --no-install-recommends \
+                dpkg-dev \
+                gcc \
+                libbz2-dev \
+                libc6-dev \
+                libexpat1-dev \
+                libffi-dev \
+                libgdbm-dev \
+                liblzma-dev \
+                libncursesw5-dev \
+                libreadline-dev \
+                libsqlite3-dev \
+                libssl-dev \
+                apt-transport-https \
+                lsb-release  \
+                ca-certificates \
+                make \
+                tk-dev \
+                tcl-dev \
+                uuid-dev \
+                wget \
+                xz-utils \
+                zlib1g-dev \
+# as of Stretch, "gpg" is no longer included by default
+                $(command -v gpg > /dev/null || echo 'gnupg dirmngr')
 
 
-RUN pip3 install virtualenv
+COPY --from=python-3.6-build /usr/local/python/3.6.6 /usr/local/python/3.6.6
+COPY --from=python-3.7-build /usr/local/openssl /usr/local/openssl
+COPY --from=python-3.7-build /usr/local/python/3.7.0 /usr/local/python/3.7.0
+ENV PATH /usr/local/python/3.7.0/bin:$PATH
+ENV PYTHON_3_7_PATH /usr/local/python/3.7.0/bin
+ENV PYTHON_3_6_PATH /usr/local/python/3.6.6/bin
+
 
 # Install Kudu
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
 RUN npm install -g kudusync \
-  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.75.10710.3480.zip \
+  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.77.10831.3545.zip \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./75.10710.3480/* /opt/Kudu \
+  && cp -rf ./77.10831.3545/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./75.10710.3480 \
+  && rm -rf ./77.10831.3545 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
@@ -534,11 +495,14 @@ COPY KuduStaticFiles/503.html /opt/Kudu/503.html
 COPY KuduStaticFiles/_Layout.cshtml /opt/Kudu/_Layout.cshtml
 COPY KuduStaticFiles/AppService.png /opt/Kudu/Content/Images/AppService.png
 COPY KuduStaticFiles/linux_favicon.ico /opt/Kudu/linux_favicon.ico
+COPY deploy.bash.python.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates/deploy.bash.python.template
 
 RUN chmod -R 777 /home \
-  && rm -rf /tmp/*
+  && rm -rf /tmp/* 
 
 EXPOSE 8181
 
 ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
+
+
