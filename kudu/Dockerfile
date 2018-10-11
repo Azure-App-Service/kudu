@@ -440,11 +440,11 @@ RUN npm install -g kudusync \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./77.10831.3545/* /opt/Kudu \
+  && cp -rf ./78.11008.3591/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./77.10831.3545 \
+  && rm -rf ./78.11008.3591 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
@@ -476,7 +476,8 @@ RUN sed -i '$d' /etc/apache2/mods-enabled/mod_mono.conf
 # Install TunnelExtension
 COPY TunnelExtension.zip /tmp
 RUN mkdir /opt/tunnelext \
-  && unzip /tmp/TunnelExtension.zip -d /opt/tunnelext
+  && unzip /tmp/TunnelExtension.zip -d /opt/tunnelext \
+  && chmod 777 /opt/tunnelext/tunnelwatcher.sh
 
 # Install webssh
 COPY webssh.zip /tmp
