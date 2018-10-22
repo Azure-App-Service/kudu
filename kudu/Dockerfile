@@ -172,11 +172,15 @@ RUN cd /tmp \
     && echo $(date) doing useradd \
     && useradd -u "1001" -g "kudu_group" "kudu_user" \
     && chmod 777 /opt/Kudu/Kudu.Services.Web.dll \
+    && chmod -R +x /opt/Kudu/ \
     && rm -rf /tmp/*             
 
 COPY startup.sh /
 
 RUN chmod 777 /startup.sh
+
+RUN ln -s /opt/nodejs/8.11.2/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
+
 
 EXPOSE 8181
 
