@@ -26,7 +26,6 @@ export WEBSITE_SITE_NAME=$SITE_NAME
 export APPSETTING_SCM_USE_LIBGIT2SHARP_REPOSITORY=0
 export KUDU_APPPATH=/opt/Kudu
 export APPDATA=/opt/Kudu/local
-export SCM_BIN_PATH=/opt/Kudu/bin
 
 
 cd /opt/Kudu

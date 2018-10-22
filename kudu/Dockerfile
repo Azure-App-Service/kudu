@@ -155,6 +155,7 @@ RUN mkdir -p /opt/Kudu/local \
   && rm -rf /tmp/*
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV jlawversion=3
 
 # Enable correct mode for dotnet watch (only mode supported in a container)
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
@@ -165,7 +166,9 @@ ENV NUGET_XMLDOC_MODE=skip
 #Instal Kudu
 RUN cd /tmp \
     && git clone https://github.com/sanchitmehta/KuduLight.git \
-    && cd ./KuduLight/Kudu.Services.Web \
+    && cd ./KuduLight \
+    && git checkout jennylaw-test \
+    && cd ./Kudu.Services.Web \
     && dotnet publish -c Release -o /opt/Kudu \
     && echo $(date) doing groupadd \
     && groupadd -g "1002" "kudu_group" \
@@ -181,6 +184,10 @@ RUN chmod 777 /startup.sh
 
 RUN ln -s /opt/nodejs/8.11.2/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
 
+RUN npm install -g kudusync
+
+ENV PATH=$PATH:/opt/nodejs/8.11.2/bin 
+RUN echo "2.15.9" > /opt/nodejs/4.5.0/npm.txt 
 
 EXPOSE 8181
 
