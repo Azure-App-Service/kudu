@@ -5,7 +5,7 @@ FROM appsvctest/python-3.6-build:latest as python-3.6-build
 FROM appsvctest/python-3.7-build:latest as python-3.7-build
 
 #FROM oryxprod/build:20181001.3 as main
-FROM oryxprod/build:20181018.8 as main
+FROM oryxprod/build:20181031.3 as main
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -28,23 +28,23 @@ RUN apt-get install -y unixodbc-dev freetds-dev freetds-bin
 #### GO
 ####
 
-ENV GOLANG_VERSION=1.10
-ENV GOLANG_DOWNLOAD_URL="https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz" GOLANG_DOWNLOAD_SHA="b5a64335f1490277b585832d1f6c7f8c6c11206cba5cd3f771dcb87b98ad1a33"
+#ENV GOLANG_VERSION=1.10
+#ENV GOLANG_DOWNLOAD_URL="https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz" GOLANG_DOWNLOAD_SHA="b5a64335f1490277b585832d1f6c7f8c6c11206cba5cd3f771dcb87b98ad1a33"
 
-RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
-  && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
-  && tar -zxf golang.tar.gz -C /usr/local \
-  && rm golang.tar.gz \
-  && apt-get install -y musl-tools
+#RUN curl -SL $GOLANG_DOWNLOAD_URL --output golang.tar.gz \
+#  && echo "$GOLANG_DOWNLOAD_SHA golang.tar.gz" | sha256sum -c - \
+#  && tar -zxf golang.tar.gz -C /usr/local \
+#  && rm golang.tar.gz \
+#  && apt-get install -y musl-tools
 
-ENV PATH /usr/local/go/bin:$PATH
+#ENV PATH /usr/local/go/bin:$PATH
 
 # Download Dep executable
-ENV DEP_VERSION=0.4.1
-ENV DEP_DOWNLOAD_URL="https://github.com/golang/dep/releases/download/v$DEP_VERSION/dep-linux-amd64" DEP_DOWNLOAD_SHA="31144e465e52ffbc0035248a10ddea61a09bf28b00784fd3fdd9882c8cbb2315"
-RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
-  && echo "$DEP_DOWNLOAD_SHA /usr/local/go/bin/dep" | sha256sum -c - \
-  && chmod +x /usr/local/go/bin/dep
+#ENV DEP_VERSION=0.4.1
+#ENV DEP_DOWNLOAD_URL="https://github.com/golang/dep/releases/download/v$DEP_VERSION/dep-linux-amd64" DEP_DOWNLOAD_SHA="31144e465e52ffbc0035248a10ddea61a09bf28b00784fd3fdd9882c8cbb2315"
+#RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
+#  && echo "$DEP_DOWNLOAD_SHA /usr/local/go/bin/dep" | sha256sum -c - \
+#  && chmod +x /usr/local/go/bin/dep
   
   
 ####
@@ -52,80 +52,58 @@ RUN curl -fL -o /usr/local/go/bin/dep $DEP_DOWNLOAD_URL \
 ####  
 
 # Section PHP
-RUN  apt-get update; \
-     apt-get install -y --no-install-recommends \
-     libcurl4-openssl-dev \
-     libssl-dev \
-     zlib1g-dev \
-     libpng-dev \
-     libpq-dev \
-     libc-client-dev \
-     libsqlite3-dev \
-     libgmp-dev \
-     libmcrypt-dev \
-     libldap2-dev \
-     libtidy-dev \
-     libkrb5-dev \
-     libicu-dev \
-     libedit-dev \
-     libxml2-dev \
-     libxslt-dev \
-     unixodbc-dev \
-     libmagickwand-dev \
-     dpkg-dev \
-     file \
-     g++ \
-     gcc \
-     libc-dev \
-     libsodium-dev \
-     libsodium18 \
-     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
+#RUN  apt-get update; \
+#     apt-get install -y --no-install-recommends \
+#     libcurl4-openssl-dev \
+#     libssl-dev \
+#     zlib1g-dev \
+#     libpng-dev \
+#     libpq-dev \
+#     libc-client-dev \
+#     libsqlite3-dev \
+#     libgmp-dev \
+#     libmcrypt-dev \
+#     libldap2-dev \
+#     libtidy-dev \
+#     libkrb5-dev \
+#     libicu-dev \
+#     libedit-dev \
+#     libxml2-dev \
+#     libxslt-dev \
+#     unixodbc-dev \
+#     libmagickwand-dev \
+#     dpkg-dev \
+#     file \
+#     g++ \
+#     gcc \
+#     libc-dev \
+#     libsodium-dev \
+#     libsodium18 \
+#     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so 
 
 
-RUN mkdir -p /usr/local/php/5.6
-COPY --from=php5.6-build /usr/local/php/5.6 /usr/local/php/5.6
+#RUN mkdir -p /usr/local/php/5.6
+#COPY --from=php5.6-build /usr/local/php/5.6 /usr/local/php/5.6
 
-RUN mkdir -p /usr/local/php/7.0
-COPY --from=php7.0-build /usr/local/php/7.0 /usr/local/php/7.0
+#RUN mkdir -p /usr/local/php/7.0
+#COPY --from=php7.0-build /usr/local/php/7.0 /usr/local/php/7.0
 
-RUN mkdir -p /usr/local/php/7.2
-COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
+#RUN mkdir -p /usr/local/php/7.2
+#COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
 
-ENV PATH /usr/local/php/7.2/bin:$PATH
+#ENV PATH /usr/local/php/7.2/bin:$PATH
 
-ENV PHP_5_6_PATH /usr/local/php/5.6/bin
-ENV PHP_7_0_PATH /usr/local/php/7.0/bin
-ENV PHP_7_2_PATH /usr/local/php/7.2/bin
+#ENV PHP_5_6_PATH /usr/local/php/5.6/bin
+#ENV PHP_7_0_PATH /usr/local/php/7.0/bin
+#ENV PHP_7_2_PATH /usr/local/php/7.2/bin
 
 # PHP Composer
-RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
-  && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --quiet \
-  && rm -f /tmp/composer-setup.php
+#RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \
+#  && php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --quiet \
+#  && rm -f /tmp/composer-setup.php
 
-ENV PHP_VERSION=7.2
-ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
-
-# Install .NET Core
-  RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-  libc6 \
-  libcurl3 \
-  libgcc1 \
-  libgssapi-krb5-2 \
-  libicu52 \
-  liblttng-ust0 \
-  libssl1.0.0 \
-  libstdc++6 \
-  libunwind8 \
-  libuuid1 \
-  zlib1g \
-  && rm -rf /var/lib/apt/lists/*
-
-# Install .NET Core SDK
-#ENV DOTNET_SDK_VERSION="2.1.402" 
-#ENV DOTNET_SDK_DOWNLOAD_URL="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-x64.tar.gz" DOTNET_SDK_DOWNLOAD_SHA="dd7f15a8202ffa2a435b7289865af4483bb0f642ffcf98a1eb10464cb9c51dd1d771efbb6120f129fe9666f62707ba0b7c476cf1fd3536d3a29329f07456de48"
-
-#### 
+#ENV PHP_VERSION=7.2
+#ENV COMPOSER_VENDOR_DIR=/home/site/wwwroot/vendor
 
 COPY LogAnalyzer.zip TunnelExtension.zip webssh.zip ssh /tmp/
 COPY KuduStaticFiles/503.html /opt/Kudu/503.html
@@ -155,7 +133,7 @@ RUN mkdir -p /opt/Kudu/local \
   && rm -rf /tmp/*
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
-ENV jlawversion=3
+ENV jlawversion=1
 
 # Enable correct mode for dotnet watch (only mode supported in a container)
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
