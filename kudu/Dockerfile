@@ -141,11 +141,14 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 # Skip extraction of XML docs - generally not useful within an image/container - helps performance
 ENV NUGET_XMLDOC_MODE=skip
 
+RUN dotnet tool install -g dotnet-aspnet-codegenerator 
+ENV PATH=$PATH:/root/.dotnet/tools
+
 #Instal Kudu
 RUN cd /tmp \
     && git clone https://github.com/sanchitmehta/KuduLight.git \
     && cd ./KuduLight \
-    && git checkout jennylaw-test \
+    && git checkout jennylaw-oryx \
     && cd ./Kudu.Services.Web \
     && dotnet publish -c Release -o /opt/Kudu \
     && echo $(date) doing groupadd \
@@ -160,12 +163,15 @@ COPY startup.sh /
 
 RUN chmod 777 /startup.sh
 
+#required for kudu
 RUN ln -s /opt/nodejs/8.11.2/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
 
 RUN npm install -g kudusync
+RUN npm install pm2@latest -g
 
+#required for kudusync
 ENV PATH=$PATH:/opt/nodejs/8.11.2/bin 
-RUN echo "2.15.9" > /opt/nodejs/4.5.0/npm.txt 
+#RUN echo "2.15.9" > /opt/nodejs/4.5.0/npm.txt 
 
 EXPOSE 8181
 
