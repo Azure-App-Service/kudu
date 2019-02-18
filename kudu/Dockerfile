@@ -218,23 +218,30 @@ RUN chmod -R 777 /usr/local/.rbenv/plugins/ruby-build
 
 RUN /usr/local/.rbenv/plugins/ruby-build/install.sh
 
-# Install ruby 2.3.1
+# Install ruby 2.3.3 (default), 2.3.8, 2.4.5
 ENV RUBY_CONFIGURE_OPTS=--disable-install-doc
 
 ENV RUBY_CFLAGS=-O3
 
 RUN eval "$(rbenv init -)" \
-  && export WEBSITES_LATEST_NODE_VERSION="2.3.3" \
-  && rbenv install $WEBSITES_LATEST_NODE_VERSION \
+  && export WEBSITES_DEFAULT_RUBY_VERSION="2.3.3" \
+  && rbenv install $WEBSITES_DEFAULT_RUBY_VERSION \
+  && rbenv install "2.3.8" \
+  && rbenv install "2.4.5" \
   && rbenv rehash \
-  && rbenv global $WEBSITES_LATEST_NODE_VERSION \
+  && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
   && ls /usr/local -a \
   && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.3.8 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.4.5 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && chmod -R 777 /usr/local/.rbenv/versions \
   && chmod -R 777 /usr/local/.rbenv/version
 
 RUN eval "$(rbenv init -)" \
-  && rbenv global $WEBSITES_LATEST_NODE_VERSION \
+  && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
   && bundle config --global build.nokogiri -- --use-system-libraries
 
 # Because Nokogiri tries to build libraries on its own otherwise
@@ -499,6 +506,7 @@ COPY KuduStaticFiles/_Layout.cshtml /opt/Kudu/_Layout.cshtml
 COPY KuduStaticFiles/AppService.png /opt/Kudu/Content/Images/AppService.png
 COPY KuduStaticFiles/linux_favicon.ico /opt/Kudu/linux_favicon.ico
 COPY deploy.bash.python.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates/deploy.bash.python.template
+COPY deploy.bash.ruby.template /opt/Kudu/bin/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
 
 RUN chmod -R 777 /home \
   && rm -rf /tmp/* 
