@@ -437,16 +437,16 @@ ENV PYTHON_3_6_PATH /usr/local/python/3.6.6/bin
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
 RUN npm install -g kudusync \
-  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.78.11008.3591.zip \
+  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.79.20129.3767.zip \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./78.11008.3591/* /opt/Kudu \
+  && cp -rf ./79.20129.3767/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./78.11008.3591 \
+  && rm -rf ./79.20129.3767 \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
