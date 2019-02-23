@@ -60,7 +60,7 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   exitWithMessageOnError "init failed"
   
   echo "Setting ruby version"
-  rbenv global $RUBY_VERSION
+  rbenv local $RUBY_VERSION
   exitWithMessageOnError "Failed to switch ruby versions"
   
   echo "Running bundle clean"
