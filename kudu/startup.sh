@@ -4,15 +4,15 @@ if [ $# -ne 5 ]; then
 	exit 1
 fi
 
+if [ -z "${PORT}"]; then
+	export PORT=8181
+fi
+
 GROUP_ID=$1
 GROUP_NAME=$2
 USER_ID=$3
 USER_NAME=$4
 SITE_NAME=$5
-
-
-if [ -z "${PORT}"]; then
-	export PORT=8181
 
 groupadd -g $GROUP_ID $GROUP_NAME
 useradd -u $USER_ID -g $GROUP_NAME $USER_NAME
