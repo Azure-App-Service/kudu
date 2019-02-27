@@ -10,6 +10,10 @@ USER_ID=$3
 USER_NAME=$4
 SITE_NAME=$5
 
+
+if [ -z "${PORT}"]; then
+	export PORT=8181
+
 groupadd -g $GROUP_ID $GROUP_NAME
 useradd -u $USER_ID -g $GROUP_NAME $USER_NAME
 chown -R $USER_NAME:$GROUP_NAME /etc/apache2
@@ -20,6 +24,7 @@ mkdir -p /var/lock/apache2 /var/run/apache2
 chown -R $USER_NAME:$GROUP_NAME /var/log/apache2 /var/lock/apache2 /var/run/apache2
 chown -R $USER_NAME:$GROUP_NAME /tmp
 sed -i -- "s/KuduSite/$SITE_NAME/g" /etc/apache2/sites-available/kudu.conf
+sed -i -- "s/port-placeholder/$PORT/g" /etc/apache2/sites-available/kudu.conf
 sed -i -- "s/user-placeholder/$USER_NAME/g" /etc/apache2/apache2.conf
 sed -i -- "s/group-placeholder/$GROUP_NAME/g" /etc/apache2/apache2.conf
 sed -i -- "s/80/8080/g" /etc/apache2/ports.conf
