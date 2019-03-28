@@ -228,13 +228,20 @@ RUN eval "$(rbenv init -)" \
   && rbenv install $WEBSITES_DEFAULT_RUBY_VERSION \
   && rbenv install "2.3.8" \
   && rbenv install "2.4.5" \
+  && rbenv install "2.5.5" \
+  && rbenv install "2.6.2" \
   && rbenv rehash \
   && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
   && ls /usr/local -a \
+  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && gem install bundler --version "=1.13.6"\
   && rbenv local 2.3.8 \
   && gem install bundler --version "=1.13.6"\
   && rbenv local 2.4.5 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.5.5 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.6.2 \
   && gem install bundler --version "=1.13.6"\
   && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && chmod -R 777 /usr/local/.rbenv/versions \
