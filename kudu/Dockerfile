@@ -16,7 +16,13 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
   && echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/5.0.0.100/. main" > \
   /etc/apt/sources.list.d/mono-xamarin.list \
-  && echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "deb http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
+  && echo "deb-src http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
+  && echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
+  && echo "deb-src http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
+  && echo "deb http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "deb-src http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf \
   && apt-get update \
   && apt-get install -y apt-utils --no-install-recommends \
   && apt-get install -y unzip --no-install-recommends \
