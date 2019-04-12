@@ -525,6 +525,7 @@ RUN chmod -R 777 /home \
   && rm -rf /tmp/* 
 
 EXPOSE 8181
+ENV PORT 8181
 
 ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
