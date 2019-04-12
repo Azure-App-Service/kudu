@@ -4,7 +4,7 @@ if [ $# -ne 5 ]; then
 	exit 1
 fi
 
-if [ -z "${PORT}"]; then
+if [ -z "${PORT}" ]; then
         export PORT=8181
 fi
 
