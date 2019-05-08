@@ -456,8 +456,8 @@ ENV PYTHON_3_6_PATH /usr/local/python/3.6.6/bin
 # Install Kudu
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
-COPY Kudu.82.10417.3867.zip /tmp/Kudu.zip
-ENV KUDU_VERSION 82.10417.3867
+COPY Kudu.82.10506.3895.zip /tmp/Kudu.zip
+ENV KUDU_VERSION 82.10506.3895
 RUN npm install -g kudusync \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
