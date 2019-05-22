@@ -270,8 +270,8 @@ RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-$FREETDS_VERSION.tar.g
   && rm freetds-$FREETDS_VERSION.tar.gz \
   && cd freetds-$FREETDS_VERSION \
   && ./configure --prefix=/usr/local --with-tdsver=7.3 \
-  && sudo make \
-  && sudo make install \
+  && make \
+  && make install \
   && cd .. 
 
 # Install .NET Core
