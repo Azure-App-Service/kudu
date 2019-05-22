@@ -16,7 +16,13 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
   && echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/5.0.0.100/. main" > \
   /etc/apt/sources.list.d/mono-xamarin.list \
-  && echo "deb http://ftp.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "deb http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
+  && echo "deb-src http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
+  && echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
+  && echo "deb-src http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
+  && echo "deb http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "deb-src http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+  && echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf \
   && apt-get update \
   && apt-get install -y apt-utils --no-install-recommends \
   && apt-get install -y unzip --no-install-recommends \
@@ -228,13 +234,20 @@ RUN eval "$(rbenv init -)" \
   && rbenv install $WEBSITES_DEFAULT_RUBY_VERSION \
   && rbenv install "2.3.8" \
   && rbenv install "2.4.5" \
+  && rbenv install "2.5.5" \
+  && rbenv install "2.6.2" \
   && rbenv rehash \
   && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
   && ls /usr/local -a \
+  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && gem install bundler --version "=1.13.6"\
   && rbenv local 2.3.8 \
   && gem install bundler --version "=1.13.6"\
   && rbenv local 2.4.5 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.5.5 \
+  && gem install bundler --version "=1.13.6"\
+  && rbenv local 2.6.2 \
   && gem install bundler --version "=1.13.6"\
   && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && chmod -R 777 /usr/local/.rbenv/versions \
@@ -443,17 +456,18 @@ ENV PYTHON_3_6_PATH /usr/local/python/3.6.6/bin
 # Install Kudu
 COPY kudu.conf /tmp
 COPY apache2.conf /tmp
+COPY Kudu.82.10506.3895.zip /tmp/Kudu.zip
+ENV KUDU_VERSION 82.10506.3895
 RUN npm install -g kudusync \
-  && wget -O /tmp/Kudu.zip https://wawsinfraprodbay063.blob.core.windows.net/kudu/Kudu.79.20129.3767.zip \
   && cp /tmp/kudu.conf /etc/apache2/sites-available/kudu.conf \
   && cp /tmp/apache2.conf /etc/apache2/apache2.conf  \
   && unzip -q -o /tmp/Kudu.zip \
   && mkdir /opt/Kudu \
-  && cp -rf ./79.20129.3767/* /opt/Kudu \
+  && cp -rf ./$KUDU_VERSION/* /opt/Kudu \
   && rm -f /tmp/Kudu.zip \
   && rm -f /tmp/apache2.conf \
   && rm -f /tmp/kudu.conf \
-  && rm -rf ./79.20129.3767 \
+  && rm -rf ./$KUDU_VERSION \
   && cat /opt/Kudu/Web.config | \
   sed 's|  <location path="." inheritInChildApplications="false">|  <location path="~/../../../opt/Kudu" inheritInChildApplications="false">|' > /opt/Kudu/Web.config2 \
   && mv /opt/Kudu/Web.config2 /opt/Kudu/Web.config \
@@ -512,6 +526,7 @@ RUN chmod -R 777 /home \
   && rm -rf /tmp/* 
 
 EXPOSE 8181
+ENV PORT 8181
 
 ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]

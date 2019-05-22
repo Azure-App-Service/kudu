@@ -19,6 +19,7 @@ touch /var/log/apache2/kudu-access.log
 mkdir -p /var/lock/apache2 /var/run/apache2
 chown -R $USER_NAME:$GROUP_NAME /var/log/apache2 /var/lock/apache2 /var/run/apache2
 chown -R $USER_NAME:$GROUP_NAME /tmp
+sed -i -- "s/port-placeholder/$PORT/g" /etc/apache2/sites-available/kudu.conf
 sed -i -- "s/KuduSite/$SITE_NAME/g" /etc/apache2/sites-available/kudu.conf
 sed -i -- "s/user-placeholder/$USER_NAME/g" /etc/apache2/apache2.conf
 sed -i -- "s/group-placeholder/$GROUP_NAME/g" /etc/apache2/apache2.conf
