@@ -231,24 +231,16 @@ ENV RUBY_CFLAGS=-O3
 
 RUN eval "$(rbenv init -)" \
   && export WEBSITES_DEFAULT_RUBY_VERSION="2.3.3" \
-  && rbenv install $WEBSITES_DEFAULT_RUBY_VERSION \
+  && rbenv install "2.3.3" \
   && rbenv install "2.3.8" \
   && rbenv install "2.4.5" \
   && rbenv install "2.5.5" \
   && rbenv install "2.6.2" \
+  && gem update --system \
+  && gem install bundler --version "=1.17" \
+  && gem install bundler --version "=2.0" \
   && rbenv rehash \
   && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
-  && ls /usr/local -a \
-  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
-  && gem install bundler --version "=1.13.6"\
-  && rbenv local 2.3.8 \
-  && gem install bundler --version "=1.13.6"\
-  && rbenv local 2.4.5 \
-  && gem install bundler --version "=1.13.6"\
-  && rbenv local 2.5.5 \
-  && gem install bundler --version "=1.13.6"\
-  && rbenv local 2.6.2 \
-  && gem install bundler --version "=1.13.6"\
   && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
   && chmod -R 777 /usr/local/.rbenv/versions \
   && chmod -R 777 /usr/local/.rbenv/version
