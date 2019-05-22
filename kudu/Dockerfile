@@ -1,11 +1,12 @@
 FROM appsvctest/php-build-5.6:latest as php5.6-build
 FROM appsvctest/php-build-7.0:latest as php7.0-build
 FROM appsvctest/php-build-7.2:latest as php7.2-build
+FROM appsvctest/php-build-7.3:latest as php7.3-build
 FROM appsvctest/python-3.6-build:latest as python-3.6-build
 FROM appsvctest/python-3.7-build:latest as python-3.7-build
 
 FROM buildpack-deps:jessie-curl as main
-MAINTAINER Nazim Lala <naziml@microsoft.com>
+LABEL maintainer="Azure App Services Container Images <appsvc-images@microsoft.com>"
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -51,6 +52,9 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && wget -O /tmp/node-v8.11.2-linux-x64.tar.xz https://nodejs.org/dist/v8.11.2/node-v8.11.2-linux-x64.tar.xz \
   && wget -O /tmp/node-v9.4.0-linux-x64.tar.xz https://nodejs.org/dist/v9.4.0/node-v9.4.0-linux-x64.tar.xz \
   && wget -O /tmp/node-v10.1.0-linux-x64.tar.xz https://nodejs.org/dist/v10.1.0/node-v10.1.0-linux-x64.tar.xz \
+  && wget -O /tmp/node-v10.10.0-linux-x64.tar.xz https://nodejs.org/dist/v10.10.0/node-v10.10.0-linux-x64.tar.xz \
+  && wget -O /tmp/node-v10.12.0-linux-x64.tar.xz https://nodejs.org/dist/v10.12.0/node-v10.12.0-linux-x64.tar.xz \
+  && wget -O /tmp/node-v10.14.2-linux-x64.tar.xz https://nodejs.org/dist/v10.14.2/node-v10.14.2-linux-x64.tar.xz \
   && wget -O /tmp/npm-2.15.8.zip https://github.com/npm/npm/archive/v2.15.8.zip \
   && wget -O /tmp/npm-2.15.9.zip https://github.com/npm/npm/archive/v2.15.9.zip \
   && wget -O /tmp/npm-3.9.5.zip https://github.com/npm/npm/archive/v3.9.5.zip \
@@ -60,6 +64,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 \
   && wget -O /tmp/npm-5.4.2.zip https://github.com/npm/npm/archive/v5.4.2.zip \
   && wget -O /tmp/npm-5.6.0.zip https://github.com/npm/npm/archive/v5.6.0.zip \
   && wget -O /tmp/npm-6.0.1.zip https://github.com/npm/npm/archive/v6.0.1.zip \
+  && wget -O /tmp/npm-6.4.1.zip https://github.com/npm/npm/archive/v6.4.1.zip \
   && ln -s ../mods-available/xml2enc.load /etc/apache2/mods-enabled \
   && a2enmod proxy \
   && a2enmod proxy_http \
@@ -183,6 +188,18 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && rm -f node-v10.1.0-linux-x64.tar.xz \
   && mv /opt/nodejs/node-v10.1.0-linux-x64 /opt/nodejs/10.1.0 \
   && echo "6.0.1" > /opt/nodejs/10.1.0/npm.txt \
+  && tar xfJ /tmp/node-v10.10.0-linux-x64.tar.xz -C /opt/nodejs \
+  && rm -f node-v10.10.0-linux-x64.tar.xz \
+  && mv /opt/nodejs/node-v10.10.0-linux-x64 /opt/nodejs/10.10.0 \
+  && echo "6.4.1" > /opt/nodejs/10.10.0/npm.txt \
+  && tar xfJ /tmp/node-v10.12.0-linux-x64.tar.xz -C /opt/nodejs \
+  && rm -f node-v10.12.0-linux-x64.tar.xz \
+  && mv /opt/nodejs/node-v10.12.0-linux-x64 /opt/nodejs/10.12.0 \
+  && echo "6.4.1" > /opt/nodejs/10.12.0/npm.txt \
+  && tar xfJ /tmp/node-v10.14.2-linux-x64.tar.xz -C /opt/nodejs \
+  && rm -f node-v10.14.2-linux-x64.tar.xz \
+  && mv /opt/nodejs/node-v10.14.2-linux-x64 /opt/nodejs/10.14.2 \
+  && echo "6.4.1" > /opt/nodejs/10.14.2/npm.txt \
   && chown -R root:root /opt/nodejs \
   && ln -s /opt/nodejs/6.11.0/bin/node /opt/nodejs/node \
   && ln -s /opt/nodejs/6.11.0/npm.txt /opt/nodejs/npm.txt \
@@ -389,11 +406,15 @@ COPY --from=php7.0-build /usr/local/php/7.0 /usr/local/php/7.0
 RUN mkdir -p /usr/local/php/7.2
 COPY --from=php7.2-build /usr/local/php/7.2 /usr/local/php/7.2
 
+RUN mkdir -p /usr/local/php/7.3
+COPY --from=php7.3-build /usr/local/php/7.3 /usr/local/php/7.3
+
 ENV PATH /usr/local/php/7.2/bin:$PATH
 
 ENV PHP_5_6_PATH /usr/local/php/5.6/bin
 ENV PHP_7_0_PATH /usr/local/php/7.0/bin
 ENV PHP_7_2_PATH /usr/local/php/7.2/bin
+ENV PHP_7_3_PATH /usr/local/php/7.3/bin
 
 # PHP Composer
 RUN php -r "copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');" \

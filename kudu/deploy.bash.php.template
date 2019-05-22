@@ -32,6 +32,9 @@ if ["$WEBSITE_PHP_VERSION" = "7.2" ]; then
     export COMPOSER="/usr/local/php/7.2/bin/composer"
 fi
 
+if ["$WEBSITE_PHP_VERSION" = "7.3" ]; then
+    export COMPOSER="/usr/local/php/7.3/bin/composer"
+fi
 
 # 1. KuduSync
 if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
