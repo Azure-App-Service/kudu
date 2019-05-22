@@ -264,15 +264,15 @@ ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 RUN apt-get install -y unixodbc-dev
 
 # find latest version of FreeTDS ftp://ftp.freetds.org/pub/freetds/stable/
-ENV FREETDS_VERSION=1.1.16
+ENV FREETDS_VERSION=1.1.6
 RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-$FREETDS_VERSION.tar.gz \
   && tar -xzf freetds-$FREETDS_VERSION.tar.gz \
+  && rm freetds-$FREETDS_VERSION.tar.gz \
   && cd freetds-$FREETDS_VERSION \
   && ./configure --prefix=/usr/local --with-tdsver=7.3 \
   && sudo make \
   && sudo make install \
-  && cd .. \
-  && rm freetds-$FREETDS_VERSION.tar.gz
+  && cd .. 
 
 # Install .NET Core
 RUN apt-get update \
