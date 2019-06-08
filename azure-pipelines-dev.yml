@@ -1,0 +1,31 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pr:
+  branches:
+    exclude:
+    - '*'
+trigger:
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    if [ -z "$(system.pullRequest.sourceRepositoryUri)" ] 
+    then 
+      python3 runTest.py \
+        --config "blessedImageConfig-dev.json" \
+        --code $(SecretCode)
+    else
+      python3 runTest.py \
+        --config "blessedImageConfig-dev.json" \
+        --code $(SecretCode) \
+        --pullRepo $(system.pullRequest.sourceRepositoryUri) \
+        --pullId $(system.pullRequest.pullRequestNumber)
+    fi
+  timeoutInMinutes: 180
+  displayName: 'Running test'

@@ -1,0 +1,11 @@
+[
+    {
+        "stack": "kudu",
+        "templateRepoURL": "https://github.com/Azure-App-Service/kudu.git",
+        "templateRepoBranchName": "master",
+        "outputImageName": "kudu:master",
+        "outputRepoURL": "https://github.com/blessedimagepipeline/kudu.git",
+        "outputRepoBranchName": "master",
+        "saveArtifacts": true
+    }
+]
