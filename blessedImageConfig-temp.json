@@ -3,6 +3,7 @@
         "stack": "kudu",
         "templateRepoURL": "https://github.com/Azure-App-Service/kudu.git",
         "templateRepoBranchName": "master",
-        "saveArtifacts": false
+        "saveArtifacts": false,
+        "useCache": true
     }
 ]

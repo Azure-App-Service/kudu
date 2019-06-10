@@ -6,6 +6,7 @@
         "outputImageName": "kudu:save",
         "outputRepoURL": "https://github.com/blessedimagepipeline/kudu.git",
         "outputRepoBranchName": "save",
-        "saveArtifacts": true
+        "saveArtifacts": true,
+        "useCache": true
     }
 ]
