@@ -217,6 +217,9 @@ RUN chmod -R 777 /usr/local/.rbenv
 
 ENV RBENV_ROOT="/usr/local/.rbenv"
 
+# Default WebSSH App Port
+ENV KUDU_WEBSSH_PORT="3000"
+
 ENV PATH="$RBENV_ROOT/bin:/usr/local:$PATH"
 
 RUN git clone https://github.com/rbenv/ruby-build.git /usr/local/.rbenv/plugins/ruby-build
