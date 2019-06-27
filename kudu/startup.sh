@@ -21,6 +21,8 @@ chown -R $USER_NAME:$GROUP_NAME /var/log/apache2 /var/lock/apache2 /var/run/apac
 chown -R $USER_NAME:$GROUP_NAME /tmp
 sed -i -- "s/port-placeholder/$PORT/g" /etc/apache2/sites-available/kudu.conf
 sed -i -- "s/KuduSite/$SITE_NAME/g" /etc/apache2/sites-available/kudu.conf
+sed -i -- "s/webssh-port-placeholder/$KUDU_WEBSSH_PORT/g" /etc/apache2/kudu.conf
+sed -i -- "s/webssh-port-placeholder/$KUDU_WEBSSH_PORT/g" /opt/webssh/config.json
 sed -i -- "s/user-placeholder/$USER_NAME/g" /etc/apache2/apache2.conf
 sed -i -- "s/group-placeholder/$GROUP_NAME/g" /etc/apache2/apache2.conf
 sed -i -- "s/80/8080/g" /etc/apache2/ports.conf
