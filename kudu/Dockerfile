@@ -191,6 +191,7 @@ RUN mkdir -p /opt/npm/2.15.8/node_modules \
   && ln -s /opt/npm/3.10.10/node_modules /usr/bin/node_modules
 
 ENV PATH $PATH:/opt/nodejs/6.11.0/bin
+ENV KUDU_WEBSSH_PORT="3000"
 
 # Upgrade mono
 RUN echo "deb http://download.mono-project.com/repo/debian beta/. main" | tee /etc/apt/sources.list.d/mono-xamarin-c7-ms.list \
